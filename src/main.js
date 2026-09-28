@@ -1,5 +1,5 @@
-import { cases, areaAt, murdererIndex } from './puzzles.js';
-import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js';
+import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-1';
+import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-1';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
@@ -66,7 +66,8 @@ function restoreMusicPreference(event) {
 
 const fixtureType = (puzzle, row, column) => {
   if (puzzle.id === 'c01') {
-    const clueFixtures = { '0,1':'box', '1,1':'chair', '2,2':'carpet', '4,5':'plant' };
+    const clueFixtures = { '0,1':'box', '1,1':'chair', '2,2':'carpet', '4,5':'plant',
+      '0,4':'shelf', '2,4':'sofa', '3,3':'table', '5,1':'counter' };
     return clueFixtures[`${row},${column}`] || null;
   }
   const room = String(puzzle.areas[areaAt(puzzle, row, column)]).toLowerCase();
@@ -77,7 +78,30 @@ const fixtureType = (puzzle, row, column) => {
     : /library|archive|office|study|map room/.test(room) ? 'shelf'
     : /living|lounge|sitting|lobby/.test(room) ? 'sofa' : null;
   const types = ['table', 'chair', 'plant', 'bed', 'shelf', 'counter', 'sofa'];
-  return index === 0 || index === 5 ? (preferred || types[(row + column + cases.indexOf(puzzle)) % types.length]) : null;
+  return [0, 3, 5, 8].includes(index) ? (preferred || types[(row + column + cases.indexOf(puzzle)) % types.length]) : null;
+};
+
+const floorMaterial = (puzzle, area) => {
+  const room = puzzle.areas[area].toLowerCase();
+  if (/garden|forest|orchard|field|trail|court|outside|roof|terrace|marsh|shore|pier|dock/.test(room)) return 'garden';
+  if (/pool|sea|cave|aquarium|kelp|quarantine/.test(room)) return 'water';
+  if (/bath|kitchen|pantry|cellar|vault|laboratory|cold|wash|laundry/.test(room)) return 'tile';
+  if (/gallery|chapel|hall|lobby|landing|museum|bank|foyer/.test(room)) return 'stone';
+  if (/living|lounge|salon|sitting|bed|sleep|cabin|green room/.test(room)) return 'carpet';
+  return ['wood', 'stone', 'tile'][area];
+};
+
+const roomWalls = (puzzle, row, column, area) => [
+  ['n', row === 0 || areaAt(puzzle, row - 1, column) !== area],
+  ['e', column === 5 || areaAt(puzzle, row, column + 1) !== area],
+  ['s', row === 5 || areaAt(puzzle, row + 1, column) !== area],
+  ['w', column === 0 || areaAt(puzzle, row, column - 1) !== area],
+].filter(([,visible]) => visible).map(([side]) => `room-wall-${side}`).join(' ');
+
+const floorDecoration = (puzzle, row, column, material) => {
+  const styles = { wood:'grain', stone:'brick', garden:'leaf', tile:'star', water:'pebble', carpet:'star' };
+  const index = cases.indexOf(puzzle);
+  return (row * 7 + column * 11 + index * 3) % 4 === 0 ? styles[material] : null;
 };
 
 const fixtureSvg = type => {
@@ -142,7 +166,7 @@ function openCase(id) {
   state.selected = 0;
   state.xMode = false;
   state.hintMode = false;
-  state.modal = null;
+  state.modal = 'help';
   state.timer = saved[id]?.timer || 0;
   state.grid = saved[id]?.grid || blank();
   state.xmarks = saved[id]?.xmarks || blank();
@@ -371,7 +395,8 @@ function renderGame() {
         const row = Math.floor(index / 6), column = index % 6, value = state.grid[row][column], marked = state.xmarks[row][column], area = areaAt(puzzle, row, column);
         const ariaLabel = `${caseRoom(state.locale, puzzle, area)}, ${tr('row')} ${number(row + 1)}, ${tr('column')} ${number(column + 1)}`;
         const fixture = fixtureType(puzzle, row, column);
-        return `<button class="scene-cell area-${area} edge-col-${column % 2} edge-row-${row % 2} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}">${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${fixtureSvg(fixture)}</span>` : ''}${value
+        const material = floorMaterial(puzzle, area), decoration = fixture ? null : floorDecoration(puzzle, row, column, material);
+        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}">${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${fixtureSvg(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
           ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
           : marked ? '<span class="xmark" aria-hidden="true">×</span>' : `<span class="cell-coordinate">${number(row + 1)}·${number(column + 1)}</span>`}</button>`;
       }).join('')}</div>
@@ -396,11 +421,15 @@ function modal() {
   const body = help
     ? `<p>${tr('helpIntro')}</p><ul><li>${tr('helpSelect')}</li><li>${tr('helpX')}</li><li>${tr('helpUndo')}</li><li>${tr('helpSubmit')}</li></ul>`
     : `<div class="setting-row"><span>${tr('language')}</span>${languageSelect}</div><div class="setting-row"><span>${tr('theme')}</span><button data-action="theme">${tr(state.theme)} · ${tr('toggle')}</button></div><div class="setting-row"><span>${tr('clock')}</span><button data-action="clock">${tr(state.clockHidden ? 'hidden' : 'visible')} · ${tr('toggle')}</button></div>`;
-  return `<div class="modal-backdrop" data-action="close"><div class="modal"><button class="modal-close" data-action="close" aria-label="${tr('close')}">×</button><span class="eyebrow">${help ? tr('rules') : tr('preferences')}</span><h2>${help ? tr('help') : tr('settings')}</h2>${body}<button class="primary-btn" data-action="close">${help ? tr('gotIt') : tr('done')}</button></div></div>`;
+  return `<div class="modal-backdrop" data-action="close"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" data-action="close" aria-label="${tr('close')}">×</button><span class="eyebrow">${help ? tr('rules') : tr('preferences')}</span><h2 id="modal-title">${help ? tr('help') : tr('settings')}</h2>${body}<button class="primary-btn" data-action="close">${help ? tr('gotIt') : tr('done')}</button></div></div>`;
 }
 
 function bind() {
   document.querySelector('.modal')?.addEventListener('click', event => event.stopPropagation());
+  if (state.modal) document.querySelector('.modal-close')?.focus();
+  document.onkeydown = event => {
+    if (event.key === 'Escape' && state.modal) { state.modal = null; render(); }
+  };
   document.querySelectorAll('[data-action]').forEach(element => element.addEventListener('click', () => {
     const action = element.dataset.action;
     if (action === 'back' || action === 'home') back();

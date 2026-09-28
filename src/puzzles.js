@@ -116,8 +116,28 @@ const additionCases=additions.map((spec,n)=>{
  });
  return {id:`c${String(n+7).padStart(2,'0')}`,title:spec.title,place:spec.place,date:spec.date,difficulty:spec.difficulty,color:spec.color,symbol:spec.symbol,desc:spec.desc,areas:spec.areas,size:6,people,solution,clues};
 });
-export const cases=[...originalCases,...additionCases];
-export function areaAt(_puzzle,row,_col){return Math.floor(row/2)}
+// Each case has its own floor plan. The six clues still place one person on
+// every row, but the rooms have alcoves instead of three rectangular strips.
+function floorPlan(puzzle,caseIndex){
+ const map=Array.from({length:6},(_,row)=>Array(6).fill(Math.floor(row/2)));
+ let firstNotch=-1;
+ for(const [boundary,seed] of [[1,caseIndex*7+1],[3,caseIndex*11+3]]){
+  const occupied=row=>puzzle.solution.find(([r])=>r===row)[1];
+  const upperOptions=[0,1,2,3,4,5].filter(column=>column!==occupied(boundary)&&(firstNotch<0||Math.abs(column-firstNotch)>=2));
+  const lowerOptions=[0,1,2,3,4,5].filter(column=>column!==occupied(boundary+1));
+  const upper=upperOptions[seed%upperOptions.length];
+  const distinctLower=lowerOptions.filter(column=>column!==upper);
+  const lower=distinctLower[(seed+2)%distinctLower.length];
+  map[boundary][upper]=Math.floor(boundary/2)+1;
+  map[boundary+1][lower]=Math.floor(boundary/2);
+  if(boundary===1)firstNotch=lower;
+ }
+ return map;
+}
+export const cases=[...originalCases,...additionCases].map((puzzle,index)=>({
+ ...puzzle,areaMap:floorPlan(puzzle,index),
+}));
+export function areaAt(puzzle,row,col){return puzzle.areaMap?.[row]?.[col]??Math.floor(row/2)}
 export function murdererIndex(puzzle){const victim=puzzle.people.findIndex(([letter])=>letter==='V'),victimArea=areaAt(puzzle,...puzzle.solution[victim]);return puzzle.solution.findIndex((pos,i)=>i!==victim&&areaAt(puzzle,...pos)===victimArea)}
 
 export function solve(puzzle){
