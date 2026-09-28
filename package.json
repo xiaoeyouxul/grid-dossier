@@ -1,0 +1,8 @@
+{
+  "name": "murdoku-inspired",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node serve.mjs"
+  }
+}
