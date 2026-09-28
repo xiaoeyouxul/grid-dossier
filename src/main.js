@@ -1,5 +1,5 @@
-import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-1';
-import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-1';
+import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-2';
+import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-2';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
@@ -98,6 +98,11 @@ const roomWalls = (puzzle, row, column, area) => [
   ['w', column === 0 || areaAt(puzzle, row, column - 1) !== area],
 ].filter(([,visible]) => visible).map(([side]) => `room-wall-${side}`).join(' ');
 
+const roomLabelAnchor = (puzzle, area) => {
+  const row = area * 2;
+  return [row, puzzle.areaMap[row].findIndex(value => value === area)];
+};
+
 const floorDecoration = (puzzle, row, column, material) => {
   const styles = { wood:'grain', stone:'brick', garden:'leaf', tile:'star', water:'pebble', carpet:'star' };
   const index = cases.indexOf(puzzle);
@@ -157,16 +162,26 @@ function render() {
   state.page === 'game' ? renderGame() : renderCases();
 }
 
-function openCase(id) {
+const historyKey = 'murdokuRoute';
+
+function routeState(page, caseId = null) {
+  return { [historyKey]: true, page, caseId };
+}
+
+function showCase(id, { tutorial = true, count = true } = {}) {
+  if (!cases.some(item => item.id === id)) return false;
+  clearInterval(timerInterval);
   state.caseId = id;
-  saved[id] = { ...(saved[id] || {}), playCount: (saved[id]?.playCount || 0) + 1, lastPlayed: Date.now() };
-  localStorage.murdoku = JSON.stringify(saved);
+  if (count) {
+    saved[id] = { ...(saved[id] || {}), playCount: (saved[id]?.playCount || 0) + 1, lastPlayed: Date.now() };
+    localStorage.murdoku = JSON.stringify(saved);
+  }
   state.page = 'game';
   state.message = null;
   state.selected = 0;
   state.xMode = false;
   state.hintMode = false;
-  state.modal = 'help';
+  state.modal = tutorial ? 'help' : null;
   state.timer = saved[id]?.timer || 0;
   state.grid = saved[id]?.grid || blank();
   state.xmarks = saved[id]?.xmarks || blank();
@@ -174,14 +189,38 @@ function openCase(id) {
   render();
   window.scrollTo(0, 0);
   timer();
+  return true;
+}
+
+function openCase(id) {
+  if (!cases.some(item => item.id === id)) return;
+  if (state.page === 'game') save();
+  history.pushState(routeState('game', id), '', `#case=${encodeURIComponent(id)}`);
+  showCase(id);
 }
 
 function back() {
+  if (state.page === 'game' && history.state?.[historyKey] && history.state.page === 'game') {
+    history.back();
+    return;
+  }
   clearInterval(timerInterval);
   state.page = 'cases';
+  state.caseId = null;
   state.modal = null;
+  if (history.state?.[historyKey]) history.replaceState(routeState('cases'), '', `${location.pathname}${location.search}`);
   render();
 }
+
+window.addEventListener('popstate', event => {
+  const route = event.state;
+  if (route?.[historyKey] && route.page === 'game' && showCase(route.caseId, { tutorial: false, count: false })) return;
+  clearInterval(timerInterval);
+  state.page = 'cases';
+  state.caseId = null;
+  state.modal = null;
+  render();
+});
 
 function undo() {
   const previous = state.undo.pop();
@@ -396,14 +435,14 @@ function renderGame() {
         const ariaLabel = `${caseRoom(state.locale, puzzle, area)}, ${tr('row')} ${number(row + 1)}, ${tr('column')} ${number(column + 1)}`;
         const fixture = fixtureType(puzzle, row, column);
         const material = floorMaterial(puzzle, area), decoration = fixture ? null : floorDecoration(puzzle, row, column, material);
-        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}">${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${fixtureSvg(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
+        const roomLabel = roomLabelAnchor(puzzle, area);
+        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}">${row === roomLabel[0] && column === roomLabel[1] ? `<span class="room-tag" aria-hidden="true">${caseRoom(state.locale, puzzle, area)}</span>` : ''}${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${fixtureSvg(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
           ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
           : marked ? '<span class="xmark" aria-hidden="true">×</span>' : `<span class="cell-coordinate">${number(row + 1)}·${number(column + 1)}</span>`}</button>`;
       }).join('')}</div>
       <div class="mobile-tools"><button data-action="xmode" class="${state.xMode ? 'tool-active' : ''}" aria-label="${tr('markImpossible')}">×</button><button data-action="clear" aria-label="${tr('clear')}">⌫</button><button data-action="undo" aria-label="${tr('undo')}" ${state.undo.length ? '' : 'disabled'}>↶</button><button data-action="hint" aria-label="${tr('hint')}">✦</button><button class="submit" data-action="submit">${tr('submit')}</button></div>
       </section>
       <section class="investigation-panel">
-      <div class="map-details"><div class="game-location"><span class="eyebrow">${caseLabel(puzzle)} · ${difficultyLabel(state.locale, puzzle.difficulty)}</span><span>${caseText(state.locale, puzzle, 'place')}</span></div><div class="area-legend">${puzzle.areas.map((area, index) => `<span><i class="area-swatch area-${index}"></i>${caseRoom(state.locale, puzzle, index)}</span>`).join('')}</div></div>
       <div class="suspect-heading"><span class="eyebrow">${tr('suspects')}</span><span>${tr('suspectPrompt')}</span></div>
       <div class="suspect-list">${puzzle.people.map((person, index) => { const clue = puzzle.clues.find(item => item.person === index); const information = clueText(state.locale, puzzle, clue); const displayName = person[1].trim().split(/\s+/u)[0] || person[1]; return `<button class="suspect ${state.selected === index ? 'selected' : ''} ${placed.includes(index + 1) ? 'placed' : ''}" data-person="${index}" aria-label="${tr('selectPerson', { name:person[1] })}. ${information}"><span class="suspect-portrait-card"><span class="person-avatar"><img class="suspect-portrait" src="./assets/portraits/portrait-${portraitIndex(cases.indexOf(puzzle), index)}.webp" alt=""><span class="person-initial">${person[0]}</span></span><span class="person-copy"><b>${displayName}</b><small>${roleLabel(state.locale, person[2], puzzle, index)}</small></span><span class="person-check">${placed.includes(index + 1) ? '✓' : ''}</span></span><span class="suspect-clue">${information}</span></button>`; }).join('')}</div>
       ${message && state.message?.key !== 'solvedMessage' ? `<div class="notice">${message}</div>` : ''}
@@ -458,5 +497,16 @@ function bind() {
   if (sort) { sort.value = state.sort; sort.onchange = () => { state.sort = sort.value; render(); }; }
 }
 
-render();
+const initialCase = new URLSearchParams(location.hash.slice(1)).get('case');
+let initializedCase = false;
+if (history.state?.[historyKey]?.page === 'game') {
+  initializedCase = showCase(history.state.caseId, { tutorial: false, count: false });
+} else if (!history.state?.[historyKey]) {
+  history.replaceState(routeState('cases'), '', `${location.pathname}${location.search}`);
+  if (initialCase && cases.some(item => item.id === initialCase)) {
+    history.pushState(routeState('game', initialCase), '', `#case=${encodeURIComponent(initialCase)}`);
+    initializedCase = showCase(initialCase, { tutorial: false, count: false });
+  }
+}
+if (!initializedCase) render();
 document.addEventListener('click', restoreMusicPreference);

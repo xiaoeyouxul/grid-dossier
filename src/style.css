@@ -639,6 +639,9 @@ html[data-theme="dark"] .success-mark { background: #315148; }
 
 /* Each suspect card pairs its portrait with their own clue, as in the original game. */
 .suspect-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 10px 8px; }
+.suspect-heading { gap: 10px; margin-bottom: 13px; }
+.suspect-heading .eyebrow { color: #087f7b; font-size: 12px; letter-spacing: .14em; }
+.suspect-heading > span:last-child { color: #555363; font-size: 12px; line-height: 1.45; text-align: right; }
 .suspect { display: grid; min-height: 0; grid-template-rows: auto 1fr; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; text-align: center; }
 .suspect:hover { transform: translateY(-2px); box-shadow: none; }
 .suspect.selected { border: 0; box-shadow: none; }
@@ -648,26 +651,29 @@ html[data-theme="dark"] .success-mark { background: #315148; }
 .suspect-portrait { inset: 0; object-position: center 32%; filter: none; transform: none; }
 .suspect .person-initial { display: none; }
 .suspect .person-copy { padding: 5px 2px 0; }
-.suspect .person-copy b { overflow: visible; font-size: clamp(9px, 1vw, 13px); text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
+.suspect .person-copy b { overflow: visible; font-size: clamp(14px, 1.1vw, 16px); text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
 .suspect .person-copy small { display: none; }
 .suspect .person-check { top: 7px; right: 7px; width: 22px; height: 22px; border-color: #fff; }
-.suspect-clue { display: flex; min-height: 82px; align-items: center; justify-content: center; padding: 31px 10px 11px; border: 2px solid color-mix(in srgb, var(--ink) 84%, transparent); border-radius: 12px; color: var(--ink); background: linear-gradient(145deg, color-mix(in srgb, var(--lilac) 14%, var(--panel)), var(--panel)); box-shadow: 4px 5px 0 #24232a55; font-size: clamp(10px, 1.05vw, 13px); line-height: 1.35; }
+.suspect-clue { display: flex; min-height: 92px; align-items: center; justify-content: center; padding: 34px 11px 12px; border: 2px solid color-mix(in srgb, var(--ink) 84%, transparent); border-radius: 12px; color: var(--ink); background: linear-gradient(145deg, color-mix(in srgb, var(--lilac) 14%, var(--panel)), var(--panel)); box-shadow: 4px 5px 0 #24232a55; font-size: clamp(13px, 1.1vw, 15px); font-weight: 500; line-height: 1.45; }
 .suspect:nth-child(4n + 2) .suspect-clue { background: linear-gradient(145deg, color-mix(in srgb, var(--teal) 14%, var(--panel)), var(--panel)); }
 .suspect:nth-child(4n + 3) .suspect-clue { background: linear-gradient(145deg, color-mix(in srgb, var(--gold) 13%, var(--panel)), var(--panel)); }
 .suspect.selected .suspect-portrait-card, .suspect.selected .suspect-clue { border-color: var(--accent); }
 .suspect:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.scene-cell .room-tag { position: absolute; z-index: 2; right: 4px; bottom: 4px; max-width: calc(100% - 8px); padding: 2px 5px; overflow: hidden; border: 1px solid #514b62a8; border-radius: 3px; color: #302d40; background: #fffdf2eF; box-shadow: 0 1px 3px #24203255; font-size: clamp(8px, .72vw, 11px); font-weight: 700; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
+html[data-theme="dark"] .scene-cell .room-tag { border-color: #d8cfe6aa; color: #f9f5ff; background: #282536eF; }
 @media (max-width: 640px) {
   .suspect-list { gap: 12px 8px; }
   .suspect-portrait-card { width: min(86%, 106px); }
   .suspect .person-avatar { width: 100%; height: auto; flex: none; }
   .suspect .person-copy { padding: 5px 2px 0; }
-  .suspect .person-copy b { font-size: clamp(9px, 2.8vw, 12px); }
-  .suspect-clue { min-height: 78px; padding: 29px 8px 10px; font-size: clamp(10px, 2.7vw, 12px); }
+  .suspect-heading .eyebrow { font-size: 11px; }
+  .suspect-heading > span:last-child { font-size: 11px; }
+  .suspect .person-copy b { font-size: clamp(13px, 3.6vw, 15px); }
+  .suspect-clue { min-height: 88px; padding: 31px 8px 11px; font-size: clamp(12px, 3.4vw, 14px); }
   .suspect .person-check { top: 6px; right: 6px; }
 }
 @media (max-width: 380px) {
-  .suspect-list { grid-template-columns: 1fr; gap: 13px; }
-  .suspect { max-width: 360px; width: 100%; justify-self: center; }
-  .suspect-portrait-card { width: 108px; }
-  .suspect-clue { min-height: 70px; }
+  .suspect-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 6px; }
+  .suspect-portrait-card { width: min(90%, 98px); }
+  .suspect-clue { min-height: 92px; padding-right: 6px; padding-left: 6px; font-size: 12px; }
 }
