@@ -1,4 +1,4 @@
-import { cases } from './puzzles.js?v=20260929-4';
+import { cases } from './puzzles.js?v=20260929-11';
 
 // Per-case copy is kept separate from the interface dictionary so stories can
 // be translated without changing their stable IDs or character names.

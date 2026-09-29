@@ -1,6 +1,6 @@
-import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-4';
-import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-4';
-import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-5';
+import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-11';
+import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-11';
+import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-11';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
@@ -163,6 +163,7 @@ const currentPuzzle = () => cases.find(item => item.id === state.caseId);
 const restoredBoard = (value, size) => Array.isArray(value) && value.length === size && value.every(row => Array.isArray(row) && row.length === size)
   ? value : blank(size);
 const tr = (key, values) => t(state.locale, key, values);
+const brand = () => state.locale === 'zh-TW' ? '謎格檔案' : state.locale === 'zh-CN' ? '谜格档案' : 'Grid Dossier';
 const number = value => new Intl.NumberFormat(state.locale).format(value);
 const time = () => `${String(Math.floor(state.timer / 60)).padStart(2, '0')}:${String(state.timer % 60).padStart(2, '0')}`;
 const formatDuration = seconds => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
@@ -196,7 +197,7 @@ function render() {
   document.documentElement.dataset.theme = state.theme;
   document.documentElement.lang = info.code;
   document.documentElement.dir = info.dir;
-  document.title = `Murdoku — ${state.page === 'game' ? caseText(state.locale, cases.find(item => item.id === state.caseId), 'title') : tr('caseFiles')}`;
+  document.title = `${brand()} — ${state.page === 'game' ? caseText(state.locale, cases.find(item => item.id === state.caseId), 'title') : tr('caseFiles')}`;
   state.page === 'game' ? renderGame() : renderCases();
 }
 
@@ -392,7 +393,7 @@ function renderCases() {
   const progressCount = cases.filter(puzzle => !saved[puzzle.id]?.solved && (saved[puzzle.id]?.playCount || saved[puzzle.id]?.lastPlayed)).length;
   app.innerHTML = `
     <header class="top">
-      <a class="brand" href="#" data-action="home">MURDOKU<span>®</span></a>
+      <a class="brand" href="#" data-action="home">${brand()}</a>
       <div class="top-actions">
         ${localeSelector()}
         ${musicToggle()}

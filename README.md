@@ -1,8 +1,8 @@
-# Murdoku-inspired｜逻辑推理案件游戏
+# 谜格档案｜逻辑推理案件游戏
 
-一个可直接在浏览器游玩的独立推理游戏。阅读人物线索，把嫌疑人放入地图上的正确位置，找出与受害者同处一室的人。项目包含 **36 个案件**，提供简单、中等、困难、专家四档难度；难度越高，人物、地图格数与房间数量越多。每个案件都经过唯一解检查。
+谜格档案（Grid Dossier）是一款可直接在浏览器游玩的独立逻辑推理游戏。阅读人物线索，把嫌疑人放入地图上的正确位置，找出与受害者同处一室的人。项目包含 **36 个案件**，案件日期均设定在 2026 年，提供简单、中等、困难、专家四档难度；难度越高，人物、地图格数与房间数量越多。每个案件都经过唯一解检查。
 
-**在线游玩：** [xiaoeyouxul.github.io/murdoku-inspired](https://xiaoeyouxul.github.io/murdoku-inspired/)
+**在线游玩：** [谜格档案在线版](https://xiaoeyouxul.github.io/murdoku-inspired/)
 
 人物卡片与线索的布局（开发截图）：
 
@@ -38,11 +38,11 @@ npm run serve
 
 ---
 
-# Murdoku-inspired | Logic mystery game
+# Grid Dossier | Logic mystery game
 
-An independent browser game built around deduction. Read each suspect's clue, place them on the map, and discover who shared a room with the victim. It includes **36 cases** across Easy, Medium, Hard, and Expert difficulties. Higher tiers increase the cast, board size, and number of irregular rooms. Every case is checked for a unique solution.
+Grid Dossier is an independent browser game built around deduction. Read each suspect's clue, place them on the map, and discover who shared a room with the victim. It includes **36 cases set in 2026** across Easy, Medium, Hard, and Expert difficulties. Higher tiers increase the cast, board size, and number of irregular rooms. Every case is checked for a unique solution.
 
-**Play online:** [xiaoeyouxul.github.io/murdoku-inspired](https://xiaoeyouxul.github.io/murdoku-inspired/)
+**Play online:** [Grid Dossier online](https://xiaoeyouxul.github.io/murdoku-inspired/)
 
 Suspect cards and clues (development capture):
 
