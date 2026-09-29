@@ -513,8 +513,9 @@ function bind() {
   document.onkeydown = event => {
     if (event.key === 'Escape' && state.modal) { state.modal = null; render(); }
   };
-  document.querySelectorAll('[data-action]').forEach(element => element.addEventListener('click', () => {
+  document.querySelectorAll('[data-action]').forEach(element => element.addEventListener('click', event => {
     const action = element.dataset.action;
+    if (action === 'home') event.preventDefault();
     if (action === 'back' || action === 'home') back();
     if (action === 'theme') { state.theme = state.theme === 'light' ? 'dark' : 'light'; localStorage.theme = state.theme; render(); }
     if (action === 'help' || action === 'settings') { state.modal = action; render(); }
