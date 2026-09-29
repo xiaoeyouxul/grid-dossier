@@ -1,6 +1,6 @@
 import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-4';
 import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-4';
-import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-4';
+import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-5';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
@@ -90,6 +90,37 @@ const floorMaterial = (puzzle, area) => {
   if (/gallery|chapel|hall|lobby|landing|museum|bank|foyer/.test(room)) return 'stone';
   if (/living|lounge|salon|sitting|bed|sleep|cabin|green room/.test(room)) return 'carpet';
   return ['wood', 'stone', 'tile', 'carpet', 'garden', 'water'][area % 6];
+};
+
+// Color the room-adjacency graph, rather than deriving a finish from the room
+// name. This keeps even similarly named neighboring rooms visually distinct.
+const roomColors = puzzle => {
+  const neighbors = puzzle.areas.map(() => new Set());
+  for (let row = 0; row < puzzle.size; row++) for (let column = 0; column < puzzle.size; column++) {
+    const area = puzzle.areaMap[row][column];
+    if (column + 1 < puzzle.size) {
+      const other = puzzle.areaMap[row][column + 1];
+      if (area !== other) { neighbors[area].add(other); neighbors[other].add(area); }
+    }
+    if (row + 1 < puzzle.size) {
+      const other = puzzle.areaMap[row + 1][column];
+      if (area !== other) { neighbors[area].add(other); neighbors[other].add(area); }
+    }
+  }
+  const colors = Array(puzzle.areas.length).fill(null);
+  const remaining = new Set(colors.map((_, area) => area));
+  while (remaining.size) {
+    const area = [...remaining].sort((a, b) => {
+      const saturation = value => new Set([...neighbors[value]].map(other => colors[other]).filter(color => color !== null)).size;
+      return saturation(b) - saturation(a) || neighbors[b].size - neighbors[a].size || a - b;
+    })[0];
+    const used = new Set([...neighbors[area]].map(other => colors[other]));
+    let color = 0;
+    while (used.has(color)) color++;
+    colors[area] = color;
+    remaining.delete(area);
+  }
+  return colors;
 };
 
 const roomWalls = (puzzle, row, column, area) => [
@@ -421,6 +452,7 @@ function renderCases() {
 
 function renderGame() {
   const puzzle = cases.find(item => item.id === state.caseId);
+  const colors = roomColors(puzzle);
   const placed = state.grid.flat();
   const messageValues = state.message?.key === 'solvedMessage'
     ? { ...state.message.values, room: caseRoom(state.locale, puzzle, state.message.values.victimArea).toLocaleLowerCase(state.locale) }
@@ -444,7 +476,7 @@ function renderGame() {
         const material = floorMaterial(puzzle, area);
         const fixture = puzzle.id === 'c01' ? fixtureType(puzzle, row, column) : fixtureForCell(row, column, cases.indexOf(puzzle), puzzle.areas[area]);
         const decoration = fixture ? null : illustratedDecoration(row, column, cases.indexOf(puzzle), material);
-        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}"><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
+        return `<button class="scene-cell area-${area} room-color-${colors[area]} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}" style="--room-hue:${(colors[area] * 137.508) % 360}"><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
           ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
           : marked ? '<span class="xmark" aria-hidden="true">×</span>' : `<span class="cell-coordinate">${number(row + 1)}·${number(column + 1)}</span>`}</button>`;
       }).join('')}${puzzle.areas.map((_, area) => {
