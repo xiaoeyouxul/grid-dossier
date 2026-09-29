@@ -40,7 +40,7 @@ html[data-theme="dark"] {
 }
 
 .top { position: relative; display: flex; height: 74px; align-items: center; justify-content: space-between; padding: 0 clamp(20px, 6vw, 88px); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); }
-.brand { color: var(--ink); font-size: 16px; font-weight: 800; letter-spacing: .18em; text-decoration: none; }
+.brand { color: var(--ink); font-size: 16px; font-weight: 800; letter-spacing: .18em; text-decoration: none; cursor: pointer; user-select: none; -webkit-user-select: none; caret-color: transparent; }
 .brand:lang(zh-CN), .brand:lang(zh-TW) { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK TC", sans-serif; letter-spacing: .08em; }
 .brand span { margin-left: 3px; color: var(--accent); font-size: 8px; vertical-align: top; letter-spacing: 0; }
 .top-actions { display: flex; align-items: center; gap: 14px; }
