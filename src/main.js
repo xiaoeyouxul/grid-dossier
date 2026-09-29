@@ -510,7 +510,38 @@ function bind() {
   document.querySelectorAll('[data-case]').forEach(element => { element.onclick = () => openCase(element.dataset.case); });
   document.querySelectorAll('[data-difficulty]').forEach(element => { element.onclick = () => { state.difficulty = element.dataset.difficulty; render(); }; });
   document.querySelectorAll('[data-person]').forEach(element => { element.onclick = () => { state.selected = Number(element.dataset.person); state.xMode = false; render(); }; });
-  document.querySelectorAll('[data-cell]').forEach(element => { element.onclick = () => { const [row, column] = element.dataset.cell.split(',').map(Number); setCell(row, column); }; });
+  const board = document.querySelector('.scene-board');
+  if (board) {
+    let hoveredCell = null;
+    let focusedCell = null;
+    const updateRoomHighlight = () => {
+      board.querySelectorAll('.room-boundary-hover').forEach(cell => cell.classList.remove('room-boundary-hover'));
+      const activeCell = hoveredCell || (focusedCell?.matches(':focus-visible') ? focusedCell : null);
+      if (!activeCell) {
+        return;
+      }
+      const area = [...activeCell.classList].find(name => name.startsWith('area-'));
+      if (!area) return;
+      board.querySelectorAll(`.scene-cell.${area}`).forEach(cell => {
+        if (/room-wall-[nesw]/.test(cell.className)) cell.classList.add('room-boundary-hover');
+      });
+    };
+    board.querySelectorAll('[data-cell]').forEach(element => {
+      element.onmouseenter = () => {
+        hoveredCell = element;
+        if (focusedCell && !focusedCell.matches(':focus-visible')) focusedCell = null;
+        updateRoomHighlight();
+      };
+      element.onmouseleave = () => {
+        if (hoveredCell === element) hoveredCell = null;
+        if (focusedCell === element && !element.matches(':focus-visible')) focusedCell = null;
+        updateRoomHighlight();
+      };
+      element.onfocus = () => { focusedCell = element.matches(':focus-visible') ? element : null; updateRoomHighlight(); };
+      element.onblur = () => { if (focusedCell === element) focusedCell = null; updateRoomHighlight(); };
+      element.onclick = () => { const [row, column] = element.dataset.cell.split(',').map(Number); setCell(row, column); };
+    });
+  }
   const sort = document.querySelector('[data-sort]');
   if (sort) { sort.value = state.sort; sort.onchange = () => { state.sort = sort.value; render(); }; }
 }

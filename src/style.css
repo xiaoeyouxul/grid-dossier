@@ -374,7 +374,7 @@ html:not([data-theme="dark"]) {
 .scene-cell .cell-person, .scene-cell .person-avatar, .scene-cell small, .scene-cell .xmark { z-index: 1; }
 .scene-cell:hover, .scene-cell:focus-visible { z-index: 2; color: #fff; background-color: #3e72f6; box-shadow: inset 0 0 0 2px #174bcc, 0 0 0 1px #fff; filter: none; }
 .scene-cell:hover .cell-coordinate, .scene-cell:hover small, .scene-cell:focus-visible .cell-coordinate, .scene-cell:focus-visible small { color: #fff; }
-.scene-cell:hover .scene-fixture, .scene-cell:focus-visible .scene-fixture { color: #eaf0ff; transform: scale(1.1) rotate(-2deg); }
+.scene-cell:hover .scene-fixture, .scene-cell:focus-visible .scene-fixture { transform: scale(1.1) rotate(-2deg); }
 .scene-cell:hover .cell-person, .scene-cell:hover .person-avatar, .scene-cell:focus-visible .cell-person, .scene-cell:focus-visible .person-avatar { transform: scale(1.1); transition: transform .18s ease; }
 .area-legend { max-width: 100%; }
 .area-swatch.area-0, .area-swatch.area-1, .area-swatch.area-2 { border-color: #74688e; background: #eee9fa; }
@@ -768,6 +768,51 @@ html .scene-cell.scene-cell[style*="--room-hue"]:hover,
 html .scene-cell.scene-cell[style*="--room-hue"]:focus-visible { background-image: none; }
 html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:hover,
 html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:focus-visible { background-color: #3e72f6; box-shadow: inset 0 0 0 3px #e8efff, 0 0 0 3px #6398ff; }
+
+/* Hover and keyboard focus identify a room without masking its floor or furniture. */
+html .scene-cell.scene-cell[style*="--room-hue"]:hover,
+html .scene-cell.scene-cell[style*="--room-hue"]:focus-visible {
+  z-index: 2;
+  color: inherit;
+  background-image: linear-gradient(hsl(var(--room-hue) 70% 62% / .46), hsl(var(--room-hue) 70% 62% / .46));
+  box-shadow: inset 0 0 0 3px #fff;
+  filter: none;
+}
+html .scene-cell.filled[style*="--room-hue"]:hover,
+html .scene-cell.filled[style*="--room-hue"]:focus-visible { background-image: linear-gradient(hsl(var(--room-hue) 70% 62% / .24), hsl(var(--room-hue) 70% 62% / .24)); }
+html .scene-cell.xmarked[style*="--room-hue"]:hover,
+html .scene-cell.xmarked[style*="--room-hue"]:focus-visible { background-image: linear-gradient(hsl(var(--room-hue) 70% 62% / .16), hsl(var(--room-hue) 70% 62% / .16)); }
+html .scene-cell.floor-wood:not(.filled):not(.xmarked):hover, html .scene-cell.floor-wood:not(.filled):not(.xmarked):focus-visible { background-color: #d8bd98; }
+html .scene-cell.floor-stone:not(.filled):not(.xmarked):hover, html .scene-cell.floor-stone:not(.filled):not(.xmarked):focus-visible { background-color: #c9c3b6; }
+html .scene-cell.floor-garden:not(.filled):not(.xmarked):hover, html .scene-cell.floor-garden:not(.filled):not(.xmarked):focus-visible { background-color: #bfd0a4; }
+html .scene-cell.floor-tile:not(.filled):not(.xmarked):hover, html .scene-cell.floor-tile:not(.filled):not(.xmarked):focus-visible { background-color: #b9d0c9; }
+html .scene-cell.floor-water:not(.filled):not(.xmarked):hover, html .scene-cell.floor-water:not(.filled):not(.xmarked):focus-visible { background-color: #9fc9d3; }
+html .scene-cell.floor-carpet:not(.filled):not(.xmarked):hover, html .scene-cell.floor-carpet:not(.filled):not(.xmarked):focus-visible { background-color: #cda9a7; }
+html .scene-cell.filled:hover, html .scene-cell.filled:focus-visible { background-color: #fffaf0; }
+html .scene-cell.xmarked:hover, html .scene-cell.xmarked:focus-visible { background-color: #f5dfe0; }
+html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:hover,
+html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:focus-visible {
+  background-image: linear-gradient(hsl(var(--room-hue) 64% 58% / .38), hsl(var(--room-hue) 64% 58% / .38));
+  box-shadow: inset 0 0 0 3px #fff;
+}
+html[data-theme="dark"] .scene-cell.scene-cell.filled[style*="--room-hue"]:hover,
+html[data-theme="dark"] .scene-cell.scene-cell.filled[style*="--room-hue"]:focus-visible { background-image: linear-gradient(hsl(var(--room-hue) 64% 58% / .2), hsl(var(--room-hue) 64% 58% / .2)); }
+html[data-theme="dark"] .scene-cell.scene-cell.xmarked[style*="--room-hue"]:hover,
+html[data-theme="dark"] .scene-cell.scene-cell.xmarked[style*="--room-hue"]:focus-visible { background-image: linear-gradient(hsl(var(--room-hue) 64% 58% / .14), hsl(var(--room-hue) 64% 58% / .14)); }
+html[data-theme="dark"] .scene-cell.floor-wood:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-wood:not(.filled):not(.xmarked):focus-visible { background-color: #51463f; }
+html[data-theme="dark"] .scene-cell.floor-stone:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-stone:not(.filled):not(.xmarked):focus-visible { background-color: #45434a; }
+html[data-theme="dark"] .scene-cell.floor-garden:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-garden:not(.filled):not(.xmarked):focus-visible { background-color: #3f5040; }
+html[data-theme="dark"] .scene-cell.floor-tile:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-tile:not(.filled):not(.xmarked):focus-visible { background-color: #3f5048; }
+html[data-theme="dark"] .scene-cell.floor-water:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-water:not(.filled):not(.xmarked):focus-visible { background-color: #344e5b; }
+html[data-theme="dark"] .scene-cell.floor-carpet:not(.filled):not(.xmarked):hover, html[data-theme="dark"] .scene-cell.floor-carpet:not(.filled):not(.xmarked):focus-visible { background-color: #514143; }
+html[data-theme="dark"] .scene-cell.scene-cell.filled[style*="--room-hue"]:hover,
+html[data-theme="dark"] .scene-cell.scene-cell.filled[style*="--room-hue"]:focus-visible { background-color: #4b405b; }
+html[data-theme="dark"] .scene-cell.scene-cell.xmarked[style*="--room-hue"]:hover,
+html[data-theme="dark"] .scene-cell.scene-cell.xmarked[style*="--room-hue"]:focus-visible { background-color: #4a3749; }
+.scene-cell.room-boundary-hover.room-wall-n { border-top-color: #3978ff !important; }
+.scene-cell.room-boundary-hover.room-wall-e { border-right-color: #3978ff !important; }
+.scene-cell.room-boundary-hover.room-wall-s { border-bottom-color: #3978ff !important; }
+.scene-cell.room-boundary-hover.room-wall-w { border-left-color: #3978ff !important; }
 
 /* Let furniture fill nearly the whole cell; cell clipping keeps hover scaling inside its border. */
 .scene-cell .scene-fixture svg { transform: scale(1.46); transform-origin: center; }
