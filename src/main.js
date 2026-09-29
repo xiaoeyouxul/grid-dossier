@@ -92,36 +92,9 @@ const floorMaterial = (puzzle, area) => {
   return ['wood', 'stone', 'tile', 'carpet', 'garden', 'water'][area % 6];
 };
 
-// Color the room-adjacency graph, rather than deriving a finish from the room
-// name. This keeps even similarly named neighboring rooms visually distinct.
-const roomColors = puzzle => {
-  const neighbors = puzzle.areas.map(() => new Set());
-  for (let row = 0; row < puzzle.size; row++) for (let column = 0; column < puzzle.size; column++) {
-    const area = puzzle.areaMap[row][column];
-    if (column + 1 < puzzle.size) {
-      const other = puzzle.areaMap[row][column + 1];
-      if (area !== other) { neighbors[area].add(other); neighbors[other].add(area); }
-    }
-    if (row + 1 < puzzle.size) {
-      const other = puzzle.areaMap[row + 1][column];
-      if (area !== other) { neighbors[area].add(other); neighbors[other].add(area); }
-    }
-  }
-  const colors = Array(puzzle.areas.length).fill(null);
-  const remaining = new Set(colors.map((_, area) => area));
-  while (remaining.size) {
-    const area = [...remaining].sort((a, b) => {
-      const saturation = value => new Set([...neighbors[value]].map(other => colors[other]).filter(color => color !== null)).size;
-      return saturation(b) - saturation(a) || neighbors[b].size - neighbors[a].size || a - b;
-    })[0];
-    const used = new Set([...neighbors[area]].map(other => colors[other]));
-    let color = 0;
-    while (used.has(color)) color++;
-    colors[area] = color;
-    remaining.delete(area);
-  }
-  return colors;
-};
+// Each area index is a distinct room identity within this case map. Assign a
+// unique hue slot to every room, including rooms that are not adjacent.
+const roomColors = puzzle => puzzle.areas.map((_, area) => area);
 
 const roomWalls = (puzzle, row, column, area) => [
   ['n', row === 0 || areaAt(puzzle, row - 1, column) !== area],
