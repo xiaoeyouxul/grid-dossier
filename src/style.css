@@ -105,6 +105,9 @@ html[data-theme="dark"] .difficulty.expert { color: #d1c2fa; background: #433b5b
 .load-more span { margin-left: 12px; }
 .footer { display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid var(--line); color: var(--muted); font: 9px "DM Mono", Consolas, monospace; letter-spacing: .1em; }
 .footer button { border: 0; color: var(--teal); background: none; cursor: pointer; font: inherit; }
+.footer-links { display: flex; align-items: center; gap: 14px; }
+.footer-links a, .game-footer a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
+.footer-links a:hover, .game-footer a:hover { color: var(--accent-strong); }
 
 .game-top { position: sticky; z-index: 4; top: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; column-gap: clamp(8px, 2vw, 20px); align-items: center; padding: 0 clamp(16px, 5vw, 72px); background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(14px); }
 .game-top .brand { position: static; transform: none; }

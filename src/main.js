@@ -419,7 +419,7 @@ function renderCases() {
         }).join('')}</div>
         ${!state.showAll ? `<button class="load-more" data-action="more">${tr('viewAll')} <span>↓</span></button>` : ''}
       </section>
-      <footer class="footer"><span>${tr('copyright')}</span><span>${tr('collection')}</span><button data-action="help">${tr('howToPlayLink')} ↗</button></footer>
+      <footer class="footer"><span>${tr('copyright')}</span><span>${tr('collection')}</span><nav class="footer-links" aria-label="网站信息 / Site information"><a href="./about.html">关于 / About</a><a href="./privacy.html">隐私 / Privacy</a><button data-action="help">${tr('howToPlayLink')} ↗</button></nav></footer>
     </main>${modal()}`;
   bind();
 }

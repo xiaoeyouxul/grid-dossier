@@ -32,6 +32,8 @@ npm run serve
 
 项目不依赖前端框架或打包步骤，静态文件由 GitHub Pages 发布。游戏进度保存在当前浏览器的 `localStorage`，不会同步到其他设备。
 
+网站信息页：[隐私政策](./privacy.html)（含中文和英文版本）与[关于／联系](./about.html)。目前网站不展示广告或运行 Google AdSense；如未来启用广告，需先更新隐私说明并配置适用的隐私选择。
+
 ## 免责声明
 
 本项目是独立的非官方致敬作品，与 [Murdoku 原网站](https://murdoku.com/)及其作者没有关联、授权或背书关系。**Murdoku** 名称与原网站的视觉素材归各自权利人所有；本项目的谜题、地图装饰和家具矢量图为独立制作，没有直接使用原网站截图或裁切素材。若权利人对项目内容有疑问，请通过本仓库的 Issues 联系维护者。
@@ -65,6 +67,8 @@ Map cells and room boundaries (development capture; open the live site for the l
 Install [Node.js](https://nodejs.org/), run `npm run serve` in this folder, and keep the terminal open. Visit <http://127.0.0.1:4173/>. The public site does not require a local server. Run `node --test test/puzzles.test.js test/i18n.test.js` to validate puzzles and translations.
 
 This is a static, dependency-free site published with GitHub Pages. Progress is stored in the current browser's `localStorage` and does not sync across devices.
+
+Site information: [Privacy Policy](./privacy.html) (Chinese and English) and [About / Contact](./about.html). The site currently displays no ads and does not run Google AdSense. If ads are enabled later, the privacy disclosures and applicable privacy choices must be updated.
 
 ## Disclaimer
 
