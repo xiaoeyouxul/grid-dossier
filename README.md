@@ -4,18 +4,18 @@
 
 **在线游玩：** [谜格档案在线版](https://xiaoeyouxul.github.io/grid-dossier/)
 
-人物卡片与线索的布局（开发截图）：
+人物卡片与线索的旧版开发截图，可能与当前网站显示不一致：
 
 ![人物卡片与线索](docs/images/suspects.png)
 
-地图格子与房间边界（开发截图；最新效果请打开在线网站）：
+地图格子与房间边界的旧版开发截图，可能与当前网站显示不一致：
 
 ![地图格子与房间边界](docs/images/map.png)
 
 ## 功能
 
 - 不同难度采用不同尺寸的地图、人物数量与不规则房间。同一张地图混合横向和纵向分区，较难案件还会出现凹形、局部包绕的房间。家具、植物及地面纹理采用本站重新绘制的矢量图形。
-- 选择人物后点击地图格子放置；可标记不可能的位置、撤销、清空、获取提示并提交答案。
+- 点击人物卡片选中人物，再点击地图格子放置；切换叉号标记模式后，点击格子可标记不可能的位置。支持撤销、清空、提示和提交答案。
 - 进入案件时显示玩法说明；计时、案件进度和已完成状态保存在浏览器本地。浏览器返回与前进按钮可切换案件和档案页。
 - 支持英语、法语、西班牙语、阿拉伯语、俄语、简体中文和繁体中文。阿拉伯语界面支持从右向左排版。
 - 支持浅色／深色外观及可开关的背景音乐；桌面布局可在同一视口中展示完整地图，窄屏幕会自动调整排版。
@@ -32,7 +32,7 @@ npm run serve
 
 项目不依赖前端框架或打包步骤，静态文件由 GitHub Pages 发布。游戏进度保存在当前浏览器的 `localStorage`，不会同步到其他设备。
 
-网站信息页：[隐私政策](./privacy.html)（含中文和英文版本）与[关于／联系](./about.html)。目前网站不展示广告或运行 Google AdSense；如未来启用广告，需先更新隐私说明并配置适用的隐私选择。
+网站信息页：[隐私政策](./privacy.html)（含中文和英文版本）与[关于／联系](./about.html)。目前网站没有接入 Google AdSense，也不展示广告。GitHub Pages 提供的子域名是否符合 AdSense 的网站资格要求，需以 Google 当前规则和审核结果为准，不能据此保证获批；本项目尚未获批。
 
 ## 免责声明
 
@@ -46,18 +46,18 @@ Grid Dossier is an independent browser game built around deduction. Read each su
 
 **Play online:** [Grid Dossier online](https://xiaoeyouxul.github.io/grid-dossier/)
 
-Suspect cards and clues (development capture):
+Older development captures below may differ from the current live site:
 
 ![Suspect cards and clues](docs/images/suspects.png)
 
-Map cells and room boundaries (development capture; open the live site for the latest artwork):
+Map cells and room boundaries:
 
 ![Map cells and room boundaries](docs/images/map.png)
 
 ## Features
 
 - Difficulty-specific boards and cast sizes. Each map mixes horizontal and vertical rooms; harder cases add concave or partially enclosing shapes. Furniture and floor details use original vector artwork.
-- Suspect placement, impossible-cell marks, undo, clear, hints, and answer checking.
+- Click a suspect card to select them, then click a map cell to place them. Turn on X-mark mode and click cells to mark impossible positions. Undo, clear, hints, and answer checking are available.
 - A tutorial when opening a case, a timer, locally saved progress, and browser Back/Forward navigation.
 - English, French, Spanish, Arabic, Russian, Simplified Chinese, and Traditional Chinese; Arabic uses right-to-left layout.
 - Light/dark appearance, optional background music, and a desktop layout that fits the full board in the viewport.
@@ -68,7 +68,7 @@ Install [Node.js](https://nodejs.org/), run `npm run serve` in this folder, and 
 
 This is a static, dependency-free site published with GitHub Pages. Progress is stored in the current browser's `localStorage` and does not sync across devices.
 
-Site information: [Privacy Policy](./privacy.html) (Chinese and English) and [About / Contact](./about.html). The site currently displays no ads and does not run Google AdSense. If ads are enabled later, the privacy disclosures and applicable privacy choices must be updated.
+Site information: [Privacy Policy](./privacy.html) (Chinese and English) and [About / Contact](./about.html). Google AdSense is not integrated and the site currently displays no ads. Eligibility of a GitHub Pages subdomain depends on Google's current requirements and review; this project has not been approved, and the URL does not guarantee approval.
 
 ## Disclaimer
 
