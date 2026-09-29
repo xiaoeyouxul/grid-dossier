@@ -763,7 +763,7 @@ html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:hover,
 html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:focus-visible { background-color: #3e72f6; box-shadow: inset 0 0 0 3px #e8efff, 0 0 0 3px #6398ff; }
 
 /* Let furniture fill nearly the whole cell; cell clipping keeps hover scaling inside its border. */
-.scene-cell .scene-fixture svg { transform: scale(1.36); transform-origin: center; }
+.scene-cell .scene-fixture svg { transform: scale(1.46); transform-origin: center; }
 .scene-cell .scene-fixture.fixture-table { width: 96%; height: 88%; }
 .scene-cell .scene-fixture.fixture-box { width: 94%; height: 92%; }
 .scene-cell .scene-fixture.fixture-chair { width: 90%; height: 90%; }
