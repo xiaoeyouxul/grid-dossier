@@ -1,5 +1,6 @@
-import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-2';
-import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-2';
+import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-3';
+import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-3';
+import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-3';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
@@ -88,19 +89,22 @@ const floorMaterial = (puzzle, area) => {
   if (/bath|kitchen|pantry|cellar|vault|laboratory|cold|wash|laundry/.test(room)) return 'tile';
   if (/gallery|chapel|hall|lobby|landing|museum|bank|foyer/.test(room)) return 'stone';
   if (/living|lounge|salon|sitting|bed|sleep|cabin|green room/.test(room)) return 'carpet';
-  return ['wood', 'stone', 'tile'][area];
+  return ['wood', 'stone', 'tile', 'carpet', 'garden', 'water'][area % 6];
 };
 
 const roomWalls = (puzzle, row, column, area) => [
   ['n', row === 0 || areaAt(puzzle, row - 1, column) !== area],
-  ['e', column === 5 || areaAt(puzzle, row, column + 1) !== area],
-  ['s', row === 5 || areaAt(puzzle, row + 1, column) !== area],
+  ['e', column === puzzle.size - 1 || areaAt(puzzle, row, column + 1) !== area],
+  ['s', row === puzzle.size - 1 || areaAt(puzzle, row + 1, column) !== area],
   ['w', column === 0 || areaAt(puzzle, row, column - 1) !== area],
 ].filter(([,visible]) => visible).map(([side]) => `room-wall-${side}`).join(' ');
 
 const roomLabelAnchor = (puzzle, area) => {
-  const row = area * 2;
-  return [row, puzzle.areaMap[row].findIndex(value => value === area)];
+  for (let row = 0; row < puzzle.size; row++) {
+    const column = puzzle.areaMap[row].findIndex(value => value === area);
+    if (column >= 0) return [row, column];
+  }
+  return [-1, -1];
 };
 
 const floorDecoration = (puzzle, row, column, material) => {
@@ -123,7 +127,10 @@ const fixtureSvg = type => {
   return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="#493d34" stroke-width="1.35" stroke-linejoin="round" stroke-linecap="round">${paths[type]}</g></svg>`;
 };
 
-const blank = () => Array.from({ length: 6 }, () => Array(6).fill(null));
+const blank = size => Array.from({ length: size }, () => Array(size).fill(null));
+const currentPuzzle = () => cases.find(item => item.id === state.caseId);
+const restoredBoard = (value, size) => Array.isArray(value) && value.length === size && value.every(row => Array.isArray(row) && row.length === size)
+  ? value : blank(size);
 const tr = (key, values) => t(state.locale, key, values);
 const number = value => new Intl.NumberFormat(state.locale).format(value);
 const time = () => `${String(Math.floor(state.timer / 60)).padStart(2, '0')}:${String(state.timer % 60).padStart(2, '0')}`;
@@ -169,7 +176,8 @@ function routeState(page, caseId = null) {
 }
 
 function showCase(id, { tutorial = true, count = true } = {}) {
-  if (!cases.some(item => item.id === id)) return false;
+  const puzzle = cases.find(item => item.id === id);
+  if (!puzzle) return false;
   clearInterval(timerInterval);
   state.caseId = id;
   if (count) {
@@ -183,8 +191,8 @@ function showCase(id, { tutorial = true, count = true } = {}) {
   state.hintMode = false;
   state.modal = tutorial ? 'help' : null;
   state.timer = saved[id]?.timer || 0;
-  state.grid = saved[id]?.grid || blank();
-  state.xmarks = saved[id]?.xmarks || blank();
+  state.grid = restoredBoard(saved[id]?.grid, puzzle.size);
+  state.xmarks = restoredBoard(saved[id]?.xmarks, puzzle.size);
   state.undo = [];
   render();
   window.scrollTo(0, 0);
@@ -238,6 +246,7 @@ function snapshot() {
 }
 
 function setCell(row, column) {
+  const size = currentPuzzle().size;
   if (state.xMode) {
     snapshot();
     state.grid[row][column] = null;
@@ -255,7 +264,7 @@ function setCell(row, column) {
     render();
     return;
   }
-  for (let index = 0; index < 6; index++) {
+  for (let index = 0; index < size; index++) {
     if ((index !== column && state.grid[row][index] && state.grid[row][index] !== personNumber)
       || (index !== row && state.grid[index][column] && state.grid[index][column] !== personNumber)) {
       setMessage('conflict');
@@ -264,7 +273,7 @@ function setCell(row, column) {
     }
   }
   snapshot();
-  for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) if (state.grid[y][x] === personNumber) state.grid[y][x] = null;
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (state.grid[y][x] === personNumber) state.grid[y][x] = null;
   state.grid[row][column] = personNumber;
   state.xmarks[row][column] = false;
   state.message = null;
@@ -274,8 +283,8 @@ function setCell(row, column) {
 
 function clearBoard() {
   snapshot();
-  state.grid = blank();
-  state.xmarks = blank();
+  state.grid = blank(currentPuzzle().size);
+  state.xmarks = blank(currentPuzzle().size);
   state.message = null;
   save();
   render();
@@ -291,7 +300,7 @@ function hint() {
   }
   const [row, column] = puzzle.solution[placementIndex];
   snapshot();
-  for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) {
+  for (let y = 0; y < puzzle.size; y++) for (let x = 0; x < puzzle.size; x++) {
     if (state.grid[y][x] === placementIndex + 1 || (y === row && state.grid[y][x]) || (x === column && state.grid[y][x])) state.grid[y][x] = null;
   }
   state.grid[row][column] = placementIndex + 1;
@@ -305,8 +314,8 @@ function hint() {
 function submit() {
   const puzzle = cases.find(item => item.id === state.caseId);
   let justSolved = false;
-  if (state.grid.flat().filter(Boolean).length !== 6) {
-    setMessage('incomplete');
+  if (state.grid.flat().filter(Boolean).length !== puzzle.people.length) {
+    setMessage('incomplete', { count: number(puzzle.people.length) });
   } else if (puzzle.solution.every(([row, column], person) => state.grid[row][column] === person + 1)) {
     justSolved = true;
     const culprit = murdererIndex(puzzle);
@@ -340,7 +349,7 @@ function submit() {
 }
 
 function renderCases() {
-  const difficulties = ['All', 'Very Easy', 'Easy', 'Medium', 'Hard', 'Expert'];
+  const difficulties = ['All', 'Easy', 'Medium', 'Hard', 'Expert'];
   const list = cases.filter(puzzle => state.difficulty === 'All' || puzzle.difficulty === state.difficulty);
   if (state.sort === 'difficulty') list.sort((a, b) => difficulties.indexOf(a.difficulty) - difficulties.indexOf(b.difficulty));
   if (state.sort === 'title') list.sort((a, b) => caseText(state.locale, a, 'title').localeCompare(caseText(state.locale, b, 'title'), state.locale));
@@ -384,8 +393,8 @@ function renderCases() {
           const solved = !!record.solved;
           const progress = !solved && !!(record.playCount || record.lastPlayed);
           const statusClass = solved ? 'is-solved' : progress ? 'is-progress' : 'is-new';
-          const miniGrid = Array.from({ length: 36 }, (_, index) => {
-            const row = Math.floor(index / 6), column = index % 6;
+          const miniGrid = Array.from({ length: puzzle.size ** 2 }, (_, index) => {
+            const row = Math.floor(index / puzzle.size), column = index % puzzle.size;
             const personIndex = puzzle.solution.findIndex(([r, c]) => r === row && c === column);
             return `<span class="mini-cell" aria-hidden="true">${personIndex >= 0 ? `<span class="mini-person person-${personIndex}">${puzzle.people[personIndex][0]}</span>` : ''}</span>`;
           }).join('');
@@ -393,11 +402,11 @@ function renderCases() {
           return `<article class="case-card ${statusClass}" style="--card:${puzzle.color}">
             <button class="case-art ${solved ? 'case-preview' : 'case-envelope'}" data-case="${puzzle.id}" aria-label="${solved ? tr('revisitCaseNamed', { title:caseText(state.locale, puzzle, 'title') }) : tr('openCaseNamed', { title:caseText(state.locale, puzzle, 'title') })}">
               <span class="serial">${tr('caseNo')} ${caseNumber(puzzle)}</span>
-              ${solved ? `<span class="case-mini-grid" aria-label="${tr('solvedBoard')}">${miniGrid}</span>` : `<span class="art-glyph">${puzzle.symbol}</span><span class="art-place">${caseText(state.locale, puzzle, 'place')}</span>`}
+              ${solved ? `<span class="case-mini-grid" style="--board-size:${puzzle.size}" aria-label="${tr('solvedBoard')}">${miniGrid}</span>` : `<span class="art-glyph">${puzzle.symbol}</span><span class="art-place">${caseText(state.locale, puzzle, 'place')}</span>`}
               <span class="case-status">${solved ? `✓ ${tr('solved')}` : progress ? tr('inProgress') : tr('caseAvailable')}</span>
               ${solved ? `<span class="solved-seal" aria-hidden="true">✓</span>` : ''}
             </button>
-            <div class="case-info"><div class="case-meta"><span>${formatDate(state.locale, puzzle.date)}</span><span class="difficulty">${difficultyLabel(state.locale, puzzle.difficulty)} · 6×6</span></div>
+            <div class="case-info"><div class="case-meta"><span>${formatDate(state.locale, puzzle.date)}</span><span class="difficulty">${difficultyLabel(state.locale, puzzle.difficulty)} · ${number(puzzle.size)}×${number(puzzle.size)}</span></div>
               <h3>${caseText(state.locale, puzzle, 'title')}</h3><p>${caseText(state.locale, puzzle, 'desc')}</p>
               ${completion}
               <div class="solved-actions"><button class="open-case" data-case="${puzzle.id}">${solved ? tr('revisit') : progress ? tr('continueCase') : tr('open')} <span aria-hidden="true">↗</span></button></div>
@@ -422,23 +431,25 @@ function renderGame() {
   const successBanner = state.message?.key === 'solvedMessage' ? `<section class="success-banner" role="status" aria-live="polite"><span class="success-mark" aria-hidden="true">✓</span><div><span class="eyebrow">${tr('caseClosed')}</span><h2>${tr('solvedHeadline')}</h2><p>${message}</p></div><div class="success-actions"><button class="primary-btn" data-action="back">${tr('backToCases')}</button>${nextPuzzle(puzzle) ? `<button class="secondary-btn" data-case="${nextPuzzle(puzzle).id}">${tr('nextCase')}</button>` : ''}</div></section>` : '';
   app.innerHTML = `
     <header class="top game-top">
-      <button class="back-link" data-action="back">← <span>${tr('back')}</span></button>
-      <b class="game-title">${caseText(state.locale, puzzle, 'title')}</b>
+      <div class="case-identity"><button class="back-link" data-action="back">← <span>${tr('back')}</span></button><b class="game-title">${caseText(state.locale, puzzle, 'title')} <small>(${number(puzzle.size)}×${number(puzzle.size)})</small></b></div>
       <div class="top-actions">${localeSelector()}<span id="timer" class="timer ${state.clockHidden ? 'hidden' : ''}">${time()}</span>${musicToggle()}<button class="icon-btn" data-action="help" aria-label="${tr('help')}">?</button><button class="icon-btn" data-action="settings" aria-label="${tr('settings')}">⚙</button></div>
     </header>
-    <main class="game-page">
+    <main class="game-page" data-size="${puzzle.size}">
       ${successBanner}
       <div class="game-layout">
       <section class="map-panel" aria-label="${caseText(state.locale, puzzle, 'place')}">
-      <div class="scene-board">${Array.from({ length: 36 }, (_, index) => {
-        const row = Math.floor(index / 6), column = index % 6, value = state.grid[row][column], marked = state.xmarks[row][column], area = areaAt(puzzle, row, column);
+      <div class="scene-board" style="--board-size:${puzzle.size}">${Array.from({ length: puzzle.size ** 2 }, (_, index) => {
+        const row = Math.floor(index / puzzle.size), column = index % puzzle.size, value = state.grid[row][column], marked = state.xmarks[row][column], area = areaAt(puzzle, row, column);
         const ariaLabel = `${caseRoom(state.locale, puzzle, area)}, ${tr('row')} ${number(row + 1)}, ${tr('column')} ${number(column + 1)}`;
-        const fixture = fixtureType(puzzle, row, column);
-        const material = floorMaterial(puzzle, area), decoration = fixture ? null : floorDecoration(puzzle, row, column, material);
-        const roomLabel = roomLabelAnchor(puzzle, area);
-        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}">${row === roomLabel[0] && column === roomLabel[1] ? `<span class="room-tag" aria-hidden="true">${caseRoom(state.locale, puzzle, area)}</span>` : ''}${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${fixtureSvg(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
+        const material = floorMaterial(puzzle, area);
+        const fixture = puzzle.id === 'c01' ? fixtureType(puzzle, row, column) : fixtureForCell(row, column, cases.indexOf(puzzle), puzzle.areas[area]);
+        const decoration = fixture ? null : illustratedDecoration(row, column, cases.indexOf(puzzle), material);
+        return `<button class="scene-cell area-${area} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}"><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
           ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
           : marked ? '<span class="xmark" aria-hidden="true">×</span>' : `<span class="cell-coordinate">${number(row + 1)}·${number(column + 1)}</span>`}</button>`;
+      }).join('')}${puzzle.areas.map((_, area) => {
+        const [row, column] = roomLabelAnchor(puzzle, area);
+        return `<span class="board-room-label" style="left:${(column + .08) * 100 / puzzle.size}%;top:${(row + .72) * 100 / puzzle.size}%" aria-hidden="true">${caseRoom(state.locale, puzzle, area)}</span>`;
       }).join('')}</div>
       <div class="mobile-tools"><button data-action="xmode" class="${state.xMode ? 'tool-active' : ''}" aria-label="${tr('markImpossible')}">×</button><button data-action="clear" aria-label="${tr('clear')}">⌫</button><button data-action="undo" aria-label="${tr('undo')}" ${state.undo.length ? '' : 'disabled'}>↶</button><button data-action="hint" aria-label="${tr('hint')}">✦</button><button class="submit" data-action="submit">${tr('submit')}</button></div>
       </section>
@@ -458,7 +469,7 @@ function modal() {
   const help = state.modal === 'help';
   const languageSelect = localeSelector();
   const body = help
-    ? `<p>${tr('helpIntro')}</p><ul><li>${tr('helpSelect')}</li><li>${tr('helpX')}</li><li>${tr('helpUndo')}</li><li>${tr('helpSubmit')}</li></ul>`
+    ? `<p>${tr('helpIntro', { count: number(currentPuzzle()?.people.length || 6), size: number(currentPuzzle()?.size || 6) })}</p><ul><li>${tr('helpSelect')}</li><li>${tr('helpX')}</li><li>${tr('helpUndo')}</li><li>${tr('helpSubmit')}</li></ul>`
     : `<div class="setting-row"><span>${tr('language')}</span>${languageSelect}</div><div class="setting-row"><span>${tr('theme')}</span><button data-action="theme">${tr(state.theme)} · ${tr('toggle')}</button></div><div class="setting-row"><span>${tr('clock')}</span><button data-action="clock">${tr(state.clockHidden ? 'hidden' : 'visible')} · ${tr('toggle')}</button></div>`;
   return `<div class="modal-backdrop" data-action="close"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="modal-close" data-action="close" aria-label="${tr('close')}">×</button><span class="eyebrow">${help ? tr('rules') : tr('preferences')}</span><h2 id="modal-title">${help ? tr('help') : tr('settings')}</h2>${body}<button class="primary-btn" data-action="close">${help ? tr('gotIt') : tr('done')}</button></div></div>`;
 }
@@ -499,14 +510,16 @@ function bind() {
 
 const initialCase = new URLSearchParams(location.hash.slice(1)).get('case');
 let initializedCase = false;
-if (history.state?.[historyKey]?.page === 'game') {
-  initializedCase = showCase(history.state.caseId, { tutorial: false, count: false });
-} else if (!history.state?.[historyKey]) {
-  history.replaceState(routeState('cases'), '', `${location.pathname}${location.search}`);
-  if (initialCase && cases.some(item => item.id === initialCase)) {
+if (initialCase && cases.some(item => item.id === initialCase)) {
+  if (!history.state?.[historyKey]) {
+    history.replaceState(routeState('cases'), '', `${location.pathname}${location.search}`);
     history.pushState(routeState('game', initialCase), '', `#case=${encodeURIComponent(initialCase)}`);
-    initializedCase = showCase(initialCase, { tutorial: false, count: false });
+  } else if (history.state.page !== 'game' || history.state.caseId !== initialCase) {
+    history.replaceState(routeState('game', initialCase), '', location.href);
   }
+  initializedCase = showCase(initialCase, { tutorial: false, count: false });
+} else {
+  history.replaceState(routeState('cases'), '', `${location.pathname}${location.search}`);
 }
 if (!initializedCase) render();
 document.addEventListener('click', restoreMusicPreference);

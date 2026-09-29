@@ -7,7 +7,7 @@ const casts=[
  [['A','Maya Cross','Lead actor'],['B','Dale Rusk','Director'],['C','Tess Morgan','Editor'],['D','Eli Park','Stunt double'],['E','Jo Vega','Producer'],['V','Rex Holliday','The victim']],
 ];
 const titles=[
- ['24-Hour Delivery','THE WILLOW & WINE','OCT 14, 2024','Very Easy','#d9a48e','✦','A delivery arrived. One guest never left.',['Front hall','Living room','Garden']],
+ ['24-Hour Delivery','THE WILLOW & WINE','OCT 14, 2024','Easy','#d9a48e','✦','A delivery arrived. One guest never left.',['Front hall','Living room','Garden']],
  ['Death by Design','MORROW HOUSE','OCT 18, 2024','Medium','#899b89','◈','The architect knew every way out.',['Studio','Atrium','Courtyard']],
  ['A Quiet Night','BLACKTHORN MANOR','OCT 22, 2024','Expert','#a597b0','☾','One storm. Six guests. No witnesses.',['Conservatory','Chapel','Cellar']],
  ['The Missing Muse','THE GILDED GALLERY','OCT 26, 2024','Hard','#c69b58','◇','A masterpiece vanished before the murder.',['Vault','Main gallery','Office']],
@@ -44,13 +44,13 @@ const additions=[
  {title:'Paper Moons',place:'CELESTIAL HOUSE OBSERVATORY',date:'NOV 12, 2024',difficulty:'Expert',color:'#b18b24',symbol:'☄',desc:'Someone forged a star chart before the telescope turned toward Earth.',areas:['Dome','Meridian room','Archive'],people:[['A','Anouk Vela','astronomer'],['B','Dorian Keel','instrument maker'],['C','Suki Ardent','research fellow'],['D','Marek Lune','night custodian'],['E','Pia Solberg','science journalist'],['V','Professor Elian Frost','the victim']]},
  {title:'Murder on the Meridian',place:'MERIDIAN NIGHT TRAIN',date:'NOV 14, 2024',difficulty:'Medium',color:'#6046a8',symbol:'♜',desc:'At the border crossing, one cabin door was locked from within.',areas:['Sleeper car','Dining car','Luggage van'],people:[['A','Rhea Cormac','rail inspector'],['B','Tomas Valez','chef'],['C','Greta Lin','cabin attendant'],['D','Nikhil Batra','card sharp'],['E','Odette March','traveling cellist'],['V','Baron Ivo Kestrel','the victim']]},
  {title:'The Borrowed Crown',place:'MUSEUM OF SMALL KINGDOMS',date:'NOV 16, 2024',difficulty:'Hard',color:'#cc623b',symbol:'♛',desc:'A coronation jewel left its case; the curator did not leave the gallery.',areas:['Crown gallery','Loading court','Restoration bay'],people:[['A','Etta Muir','textile conservator'],['B','Bastian Crowe','security chief'],['C','Nuri Haddad','gem appraiser'],['D','Faye Lennox','museum trustee'],['E','Gideon Frost','crate handler'],['V','Lady Sabine Orlow','the victim']]},
- {title:'Static at Blue Hour',place:'KITE & CO. RADIO',date:'NOV 18, 2024',difficulty:'Very Easy',color:'#3d6fbd',symbol:'◉',desc:'A confession aired between the weather and the late-night jazz set.',areas:['On-air booth','Tape library','Roof mast'],people:[['A','Milo Finch','sound engineer'],['B','Jada Wells','news reader'],['C','Perry Locke','record archivist'],['D','Rina Sol','caller-screen host'],['E','Calder Wynn','station owner'],['V','June Aster','the victim']]},
+ {title:'Static at Blue Hour',place:'KITE & CO. RADIO',date:'NOV 18, 2024',difficulty:'Easy',color:'#3d6fbd',symbol:'◉',desc:'A confession aired between the weather and the late-night jazz set.',areas:['On-air booth','Tape library','Roof mast'],people:[['A','Milo Finch','sound engineer'],['B','Jada Wells','news reader'],['C','Perry Locke','record archivist'],['D','Rina Sol','caller-screen host'],['E','Calder Wynn','station owner'],['V','June Aster','the victim']]},
  {title:'Honey in the Walls',place:'BEECHHOLLOW APIARY',date:'NOV 20, 2024',difficulty:'Easy',color:'#aa4f88',symbol:'☘',desc:'The winter hive was sealed. Someone had already taken the queen.',areas:['Glass apiary','Wax room','Orchard gate'],people:[['A','Bex Marlow','beekeeper'],['B','Omar Finch','wax sculptor'],['C','Sylvie Hart','hive researcher'],['D','Tariq Bloom','orchard tenant'],['E','Della Rue','market buyer'],['V','August Weller','the victim']]},
  {title:'The Tidemaker’s Ledger',place:'OLD QUAY CUSTOMS HOUSE',date:'NOV 22, 2024',difficulty:'Medium',color:'#718d2a',symbol:'◉',desc:'A harbor ledger listed a ship that had sunk twenty years ago.',areas:['Tally room','Salt stairs','Customs loft'],people:[['A','Rafi Calder','dock clerk'],['B','Minna Gray','ship chandler'],['C','Esme Dallow','ledger keeper'],['D','Joost Venn','salvage diver'],['E','Tilda Moss','ferry captain'],['V','Captain Bramwell Saye','the victim']]},
  {title:'Eight Bells at Marrow Wharf',place:'MARROW WHARF SALVAGE',date:'NOV 24, 2024',difficulty:'Expert',color:'#3f858c',symbol:'❖',desc:'A bell rang eight times from a vessel that had no bell aboard.',areas:['Drydock','Rope loft','Pier office'],people:[['A','Keiko Armitage','rigging master'],['B','Lars Boudreaux','wreck diver'],['C','Una Bell','shipwright'],['D','Dmitri Hale','harbor pilot'],['E','Fenna Cole','insurance examiner'],['V','Merrick Vane','the victim']]},
  {title:'The Winter Orchard',place:'CIDER HOUSE AT GREYMEAD',date:'NOV 26, 2024',difficulty:'Hard',color:'#c14744',symbol:'❄',desc:'The frost cellar held fresh footprints and one unclaimed glass.',areas:['Press room','Frost cellar','Apple loft'],people:[['A','Mabel Quince','cider maker'],['B','Ronan Pearce','orchard foreman'],['C','Lotte Ash','local historian'],['D','Davi Rowan','delivery driver'],['E','Petra Noll','wine buyer'],['V','Silas Bramley','the victim']]},
  {title:'A Recipe for Silence',place:'THE COPPER LADLE',date:'NOV 28, 2024',difficulty:'Medium',color:'#6875c4',symbol:'♨',desc:'The supper club served six courses, then one final secret.',areas:['Chef’s table','Cold kitchen','Wine cage'],people:[['A','Mina Baptiste','sous-chef'],['B','Arlo Caines','sommelier'],['C','Yvette Song','food critic'],['D','Paco Bell','dish steward'],['E','Lena Sato','club investor'],['V','Chef Ambrose Pike','the victim']]},
- {title:'The Painted Stair',place:'HOTEL VIOLETTE',date:'NOV 30, 2024',difficulty:'Very Easy',color:'#bb6f26',symbol:'⌘',desc:'A portrait was turned to face the wall just before the lights failed.',areas:['Grand landing','Housekeeping wing','Roof conservatory'],people:[['A','Ada Bexley','interior painter'],['B','Moss Calder','bell captain'],['C','Yara Penn','guest liaison'],['D','Hugo Trask','elevator mechanic'],['E','Nell Vardon','travel writer'],['V','Mr. Emmett Vale','the victim']]},
+ {title:'The Painted Stair',place:'HOTEL VIOLETTE',date:'NOV 30, 2024',difficulty:'Easy',color:'#bb6f26',symbol:'⌘',desc:'A portrait was turned to face the wall just before the lights failed.',areas:['Grand landing','Housekeeping wing','Roof conservatory'],people:[['A','Ada Bexley','interior painter'],['B','Moss Calder','bell captain'],['C','Yara Penn','guest liaison'],['D','Hugo Trask','elevator mechanic'],['E','Nell Vardon','travel writer'],['V','Mr. Emmett Vale','the victim']]},
  {title:'The Greenhouse Waltz',place:'LANTERNLEAF FLORAL SCHOOL',date:'DEC 02, 2024',difficulty:'Easy',color:'#43805c',symbol:'❀',desc:'A dance card named a partner who had been dead for a week.',areas:['Tropical house','Lecture hall','Seed vault'],people:[['A','Cora Lark','floral designer'],['B','Benoit March','dance instructor'],['C','Hana Ives','seed keeper'],['D','Felix Bloom','grounds steward'],['E','Marta Vale','alumna'],['V','Dean Rosamund Thorne','the victim']]},
  {title:'Last Stop, Foxglove',place:'FOXGLOVE SLEEPING CARS',date:'DEC 04, 2024',difficulty:'Hard',color:'#924fb2',symbol:'◇',desc:'The porter found a ticket punched for a station removed from the map.',areas:['Observation car','Breakfast nook','Mail compartment'],people:[['A','Saira Pell','night porter'],['B','Olek Varga','mail sorter'],['C','Toby Cress','rail cook'],['D','Frida Moss','ticket examiner'],['E','Nico Vale','sleeping-car guest'],['V','Dr. Imogen Shaw','the victim']]},
  {title:'Understudy Alibi',place:'THE LITTLE COMET THEATRE',date:'DEC 06, 2024',difficulty:'Medium',color:'#2b80bb',symbol:'✦',desc:'The understudy knew every line, including the one that was never written.',areas:['Prompt corner','Painted flats','Costume cage'],people:[['A','Lark Dempsey','understudy'],['B','Rafi Calderon','prop builder'],['C','Mina Tolland','costume cutter'],['D','Otto June','lighting hand'],['E','Sable Wynn','theatre patron'],['V','Daphne Rook','the victim']]},
@@ -58,7 +58,7 @@ const additions=[
  {title:'Snowfall at Eastmere',place:'EASTMERE ALPINE LODGE',date:'DEC 10, 2024',difficulty:'Easy',color:'#808c2e',symbol:'❄',desc:'The avalanche sealed the pass. The lodge kept one door mysteriously warm.',areas:['Ski room','Boiler annex','Map lounge'],people:[['A','Greer Snow','mountain guide'],['B','Pavel Rook','boiler tender'],['C','Iris Kade','ski medic'],['D','Tamsin Vail','weather observer'],['E','Cato Merritt','lodge investor'],['V','Elias Eastmere','the victim']]},
  {title:'The Velvet Switchboard',place:'NIGHTJAR TELEPHONE EXCHANGE',date:'DEC 12, 2024',difficulty:'Hard',color:'#c15785',symbol:'☎',desc:'A disconnected line carried a voice from the exchange’s sealed basement.',areas:['Operator floor','Cable cellar','Roof relay'],people:[['A','Luz Mercado','chief operator'],['B','Harvey Kells','line repairer'],['C','Nina March','switchboard trainee'],['D','Solomon Finch','night courier'],['E','Beatrix Cole','subscriber'],['V','Mister Alistair Pym','the victim']]},
  {title:'The Mooncake Ledger',place:'JADE LANTERN TEA HOUSE',date:'DEC 14, 2024',difficulty:'Medium',color:'#327d9c',symbol:'☯',desc:'One recipe was written in a hand that belonged to no living cook.',areas:['Tea pavilion','Kitchen garden','Drying loft'],people:[['A','Lin Qiao','tea blender'],['B','Bao Wen','pastry chef'],['C','Mei Tan','account keeper'],['D','Jun Park','courtyard gardener'],['E','Shao Ren','antique dealer'],['V','Madame Yu Lan','the victim']]},
- {title:'Saltglass Casino',place:'THE SALTGLASS ROOMS',date:'DEC 16, 2024',difficulty:'Very Easy',color:'#9a6430',symbol:'♦',desc:'The house always wins—unless someone changes the count at midnight.',areas:['Baccarat salon','Cashier cage','Service tunnel'],people:[['A','Romy Vale','card dealer'],['B','Cyrus Nix','pit boss'],['C','Edda Shore','safe auditor'],['D','Felipe Crane','casino singer'],['E','Wynn Mercer','high roller'],['V','Mr. Lucien Roque','the victim']]},
+ {title:'Saltglass Casino',place:'THE SALTGLASS ROOMS',date:'DEC 16, 2024',difficulty:'Easy',color:'#9a6430',symbol:'♦',desc:'The house always wins—unless someone changes the count at midnight.',areas:['Baccarat salon','Cashier cage','Service tunnel'],people:[['A','Romy Vale','card dealer'],['B','Cyrus Nix','pit boss'],['C','Edda Shore','safe auditor'],['D','Felipe Crane','casino singer'],['E','Wynn Mercer','high roller'],['V','Mr. Lucien Roque','the victim']]},
  {title:'The Red Kite House',place:'WINDWARD KITE FESTIVAL',date:'DEC 18, 2024',difficulty:'Easy',color:'#6355a6',symbol:'⌁',desc:'A red kite returned from the clouds with a key tied to its tail.',areas:['Wind pavilion','Reed field','Repair tent'],people:[['A','Anya Bell','kite maker'],['B','Kofi Dune','festival marshal'],['C','Ruth Mallow','weather watcher'],['D','Ezra Finch','string runner'],['E','Nadiya Vale','sponsor'],['V','Master Corin Reed','the victim']]},
  {title:'When Bellflower Closed',place:'BELLFLOWER & THORN',date:'DEC 20, 2024',difficulty:'Hard',color:'#c54970',symbol:'♧',desc:'The florist’s final delivery was addressed to a room with no door.',areas:['Cooler room','Back counter','Rooftop beds'],people:[['A','Pippa North','florist'],['B','Rafi Dallow','delivery rider'],['C','Tess Fenn','flower auctioneer'],['D','Dorian Vale','building porter'],['E','Nora Quill','regular customer'],['V','Mister Alden Bellflower','the victim']]},
  {title:'The Unfinished Blueprint',place:'MILESTONE BUILDERS’ CLUB',date:'DEC 22, 2024',difficulty:'Expert',color:'#37936e',symbol:'⊙',desc:'A building plan showed a seventh room in a house with only six.',areas:['Drafting loft','Model workshop','Foundation pit'],people:[['A','Oona Gridley','architect'],['B','Jae Mercer','site engineer'],['C','Vik Sallow','model maker'],['D','Miriam Locke','planning officer'],['E','Tad Quoin','property heir'],['V','Sir Basil Framework','the victim']]},
@@ -66,7 +66,7 @@ const additions=[
  {title:'Ashes of Bellweather',place:'BELLWEATHER FIRE WATCH',date:'DEC 26, 2024',difficulty:'Hard',color:'#4777a1',symbol:'♢',desc:'The fire bell sounded under clear skies; the tower log was already ash.',areas:['Lookout tower','Pump house','Cinder trail'],people:[['A','Silas Ember','fire lookout'],['B','Mara Flint','pump keeper'],['C','Cleo Vane','forest ecologist'],['D','Gus Rill','trail warden'],['E','Tova Crane','insurance assessor'],['V','Chief Arden Bellweather','the victim']]},
  {title:'A Lantern for the Deep',place:'PELAGIC HOUSE AQUARIUM',date:'DEC 28, 2024',difficulty:'Easy',color:'#96712b',symbol:'⛵',desc:'A lanternfish appeared in the freshwater tank, glowing beside a missing key.',areas:['Kelp gallery','Quarantine pool','Pump corridor'],people:[['A','Mako Sato','aquarist'],['B','Inez Pel','marine medic'],['C','Theo Current','tank engineer'],['D','Laleh Reef','education guide'],['E','Bruno Tide','donor'],['V','Dr. Vera Shoal','the victim']]},
  {title:'The Borrowed Hour',place:'WICK & WHEEL CLOCKWORKS',date:'DEC 30, 2024',difficulty:'Expert',color:'#6f4da1',symbol:'⚙',desc:'Every clock stopped at 2:17. One was found running backward.',areas:['Escapement shop','Clock gallery','Bell loft'],people:[['A','Pru Gearhart','clockmaker'],['B','Nils Sprocket','apprentice'],['C','Ada Pendulum','horologist'],['D','Yuri Chime','bell ringer'],['E','Mabel Minute','collector'],['V','Edmund Wick','the victim']]},
- {title:'The Blue Finch Hotel',place:'BLUE FINCH MOTOR COURT',date:'JAN 02, 2025',difficulty:'Very Easy',color:'#30877e',symbol:'✧',desc:'Room keys were swapped during the storm, but the guest book was not.',areas:['Motel office','Ice court','Laundry wing'],people:[['A','Bryn Sutter','desk manager'],['B','Lola Finch','house painter'],['C','Marty Dune','vending repairer'],['D','Aiko Wells','traveling nurse'],['E','Rex Pollen','insurance salesman'],['V','Daisy Blue','the victim']]},
+ {title:'The Blue Finch Hotel',place:'BLUE FINCH MOTOR COURT',date:'JAN 02, 2025',difficulty:'Easy',color:'#30877e',symbol:'✧',desc:'Room keys were swapped during the storm, but the guest book was not.',areas:['Motel office','Ice court','Laundry wing'],people:[['A','Bryn Sutter','desk manager'],['B','Lola Finch','house painter'],['C','Marty Dune','vending repairer'],['D','Aiko Wells','traveling nurse'],['E','Rex Pollen','insurance salesman'],['V','Daisy Blue','the victim']]},
  {title:'The Last Wildflower',place:'NORTH FEN BOTANICAL RESERVE',date:'JAN 04, 2025',difficulty:'Medium',color:'#ba6252',symbol:'❁',desc:'A rare bloom vanished from the marsh, leaving six muddy paths behind.',areas:['Boardwalk','Seed cabin','Observation blind'],people:[['A','Nell Marsh','field botanist'],['B','Omar Lark','reserve ranger'],['C','Pia Fenwick','seed archivist'],['D','Cal Rook','boat keeper'],['E','Sana Wren','wildlife painter'],['V','Dr. Elowen Reed','the victim']]},
 ];
 
@@ -116,33 +116,68 @@ const additionCases=additions.map((spec,n)=>{
  });
  return {id:`c${String(n+7).padStart(2,'0')}`,title:spec.title,place:spec.place,date:spec.date,difficulty:spec.difficulty,color:spec.color,symbol:spec.symbol,desc:spec.desc,areas:spec.areas,size:6,people,solution,clues};
 });
-// Each case has its own floor plan. The six clues still place one person on
-// every row, but the rooms have alcoves instead of three rectangular strips.
-function floorPlan(puzzle,caseIndex){
- const map=Array.from({length:6},(_,row)=>Array(6).fill(Math.floor(row/2)));
- let firstNotch=-1;
- for(const [boundary,seed] of [[1,caseIndex*7+1],[3,caseIndex*11+3]]){
-  const occupied=row=>puzzle.solution.find(([r])=>r===row)[1];
-  const upperOptions=[0,1,2,3,4,5].filter(column=>column!==occupied(boundary)&&(firstNotch<0||Math.abs(column-firstNotch)>=2));
-  const lowerOptions=[0,1,2,3,4,5].filter(column=>column!==occupied(boundary+1));
-  const upper=upperOptions[seed%upperOptions.length];
-  const distinctLower=lowerOptions.filter(column=>column!==upper);
-  const lower=distinctLower[(seed+2)%distinctLower.length];
-  map[boundary][upper]=Math.floor(boundary/2)+1;
-  map[boundary+1][lower]=Math.floor(boundary/2);
-  if(boundary===1)firstNotch=lower;
+const extraPeople=[['G','Rowan Vale','night porter'],['H','Mina Grey','archivist'],['I','Theo March','groundskeeper'],['J','Ada Finch','restorer'],['K','Luca North','investigator'],['L','Sera Bell','forensic analyst']];
+const sizeForDifficulty={Easy:6,Medium:8,Hard:10,Expert:12};
+const roomSuffixSets=[
+ ['Annex','Passage','Loft'],['Gallery','Vault','Service Wing'],['Archive','Courtyard','Hidden Room'],
+ ['East Wing','Cellar','Atrium'],['Garden Walk','Map Room','Bell Tower'],['Old Wing','Workshop','Secret Passage'],
+];
+function connected(map,room){
+ const cells=[];map.forEach((line,r)=>line.forEach((value,c)=>{if(value===room)cells.push([r,c])}));
+ const seen=new Set([cells[0]?.join(',')]),queue=cells.slice(0,1);
+ for(const [r,c] of queue)for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){const y=r+dr,x=c+dc,key=`${y},${x}`;if(y<0||y>=map.length||x<0||x>=map.length||seen.has(key)||map[y][x]!==room)continue;seen.add(key);queue.push([y,x]);}
+ return seen.size===cells.length;
+}
+function makeAreaMap(size,solution,seed){
+ const rooms=size/2,map=Array.from({length:size},(_,r)=>Array(size).fill(Math.floor(r/2)));
+ const occupied=new Set(solution.map(([r,c])=>`${r},${c}`));
+ // Move matched cells across each room boundary at different columns. This
+ // keeps every room connected while producing notches and offset alcoves.
+ for(let room=0;room<rooms-1;room++){
+  const upperRow=2*room+1,lowerRow=upperRow+1,offset=(seed+room*3)%size;
+  const upper=Array.from({length:size},(_,i)=>(offset+i)%size).filter(c=>!occupied.has(`${upperRow},${c}`));
+  const lower=Array.from({length:size},(_,i)=>(offset+size-1-i)%size).filter(c=>!occupied.has(`${lowerRow},${c}`));
+  let done=false;
+  for(const a of upper)for(const b of lower){
+   if(done||a===b)continue;
+   map[upperRow][a]=room+1;map[lowerRow][b]=room;
+   if(Array.from({length:rooms},(_,id)=>connected(map,id)).every(Boolean)){done=true;break;}
+   map[upperRow][a]=room;map[lowerRow][b]=room+1;
+  }
+ }
+ // Let the boundaries wander beyond their initial two-row bands. A transfer
+ // is accepted only if both rooms stay connected and every solved position
+ // remains in its intended room.
+ let random=(seed*1664525+1013904223)>>>0;
+ const next=()=>((random=(Math.imul(random,1664525)+1013904223)>>>0)/4294967296);
+ for(let pass=0,changes=0;pass<size*size*5&&changes<size+rooms;pass++){
+  const row=Math.floor(next()*size),column=Math.floor(next()*size),from=map[row][column];
+  if(occupied.has(`${row},${column}`))continue;
+  const neighbors=[[row-1,column],[row+1,column],[row,column-1],[row,column+1]].filter(([r,c])=>r>=0&&r<size&&c>=0&&c<size&&map[r][c]!==from);
+  if(!neighbors.length)continue;
+  const [targetRow,targetColumn]=neighbors[Math.floor(next()*neighbors.length)],to=map[targetRow][targetColumn];
+  map[row][column]=to;
+  if(Array.from({length:rooms},(_,id)=>connected(map,id)).every(Boolean))changes++;
+  else map[row][column]=from;
  }
  return map;
 }
-export const cases=[...originalCases,...additionCases].map((puzzle,index)=>({
- ...puzzle,areaMap:floorPlan(puzzle,index),
-}));
+function expandPuzzle(puzzle,index){
+ const difficulty=puzzle.difficulty==='Easy'?'Easy':puzzle.difficulty,size=sizeForDifficulty[difficulty]||6,roomCount=size/2,people=puzzle.people.map(person=>[...person]);
+ for(let i=6;i<size;i++)people.push([...extraPeople[i-6]]);
+ const areaSuffixes=Array.from({length:roomCount-3},(_,i)=>roomSuffixSets[index%roomSuffixSets.length][i]);
+ const areas=[...puzzle.areas.slice(0,3),...areaSuffixes.map((suffix,i)=>`${puzzle.areas[i%3]} ${suffix}`)];
+ const solution=people.map((_,i)=>{const group=Math.floor(i/2),within=i%2,rowFlip=(index>>group)&1,columnFlip=(index>>(group+3))&1;return [2*group+(within^rowFlip),2*group+(within^columnFlip)];});
+ const clues=people.map((person,i)=>{const [row,column]=solution[i],group=Math.floor(i/2),constraints=[{type:'row',value:row},{type:'area',value:group},{type:'columnPair',value:group}];if(i%2===0)constraints.push({type:'column',value:column});return {person:i,constraints,text:''};});
+ const expanded={...puzzle,difficulty,size,areas,areaSuffixes,people,solution,clues,anchorByPair:Array.from({length:roomCount},(_,g)=>g*2)};
+ expanded.areaMap=makeAreaMap(size,solution,index+13);return expanded;
+}
+export const cases=[...originalCases,...additionCases].map(expandPuzzle);
 export function areaAt(puzzle,row,col){return puzzle.areaMap?.[row]?.[col]??Math.floor(row/2)}
 export function murdererIndex(puzzle){const victim=puzzle.people.findIndex(([letter])=>letter==='V'),victimArea=areaAt(puzzle,...puzzle.solution[victim]);return puzzle.solution.findIndex((pos,i)=>i!==victim&&areaAt(puzzle,...pos)===victimArea)}
-
 export function solve(puzzle){
- const candidates=puzzle.people.map((_,person)=>Array.from({length:36},(_,i)=>[Math.floor(i/6),i%6]).filter(([r,c])=>puzzle.clues.find(clue=>clue.person===person).constraints.every(x=>x.type==='row'?r===x.value:x.type==='area'?areaAt(puzzle,r,c)===x.value:x.type==='columnPair'?Math.floor(c/2)===x.value:x.type==='column'?c===x.value:false)));
+ const size=puzzle.size,candidates=puzzle.people.map((_,person)=>Array.from({length:size*size},(_,i)=>[Math.floor(i/size),i%size]).filter(([r,c])=>puzzle.clues.find(clue=>clue.person===person).constraints.every(x=>x.type==='row'?r===x.value:x.type==='area'?areaAt(puzzle,r,c)===x.value:x.type==='columnPair'?Math.floor(c/2)===x.value:x.type==='column'?c===x.value:false)));
  const solutions=[];
- function visit(person,placed,rows,cols){if(solutions.length>1)return;if(person===6){solutions.push(placed);return}for(const [r,c] of candidates[person]){if(rows.has(r)||cols.has(c))continue;visit(person+1,[...placed,[r,c]],new Set([...rows,r]),new Set([...cols,c]))}}
+ function visit(person,placed,rows,cols){if(solutions.length>1)return;if(person===puzzle.people.length){solutions.push(placed);return}for(const [r,c] of candidates[person]){if(rows.has(r)||cols.has(c))continue;visit(person+1,[...placed,[r,c]],new Set([...rows,r]),new Set([...cols,c]))}}
  visit(0,[],new Set(),new Set());return solutions;
 }

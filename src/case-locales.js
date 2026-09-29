@@ -1,4 +1,4 @@
-import { cases } from './puzzles.js';
+import { cases } from './puzzles.js?v=20260929-3';
 
 // Per-case copy is kept separate from the interface dictionary so stories can
 // be translated without changing their stable IDs or character names.
@@ -348,15 +348,41 @@ const translatedRoles = {
   'seed archivist':['archiviste des graines','archivista de semillas','أمين أرشيف البذور','архивариус семян','种子档案管理员','種子檔案管理員'],
   'boat keeper':['gardien des bateaux','encargado de las embarcaciones','قيّم القوارب','смотритель лодок','船只管理员','船隻管理員'],
   'wildlife painter':['peintre animalier','pintor de fauna','رسام الحياة البرية','художник-анималист','野生动物画家','野生動物畫家'],
+  'night porter':['veilleur de nuit','portero nocturno','بواب ليلي','ночной портье','夜间门卫','夜間門房'],
+  archivist:['archiviste','archivista','أمين أرشيف','архивариус','档案管理员','檔案管理員'],
+  restorer:['restaurateur','restaurador','مرمم','реставратор','修复师','修復師'],
+  investigator:['enquêteur','investigador','محقق','следователь','调查员','調查員'],
+  'forensic analyst':['analyste médico-légal','analista forense','محلل الأدلة الجنائية','криминалист','法证分析员','法證分析員'],
 };
 
 const localeOrder=['fr','es','ar','ru','zh-CN','zh-TW'];
+const roomSuffixes={
+  Annex:['annexe','anexo','ملحق','пристройка','附楼','附樓'],
+  Passage:['passage','pasaje','ممر','проход','通道','通道'],
+  Loft:['combles','desván','علية','чердак','阁楼','閣樓'],
+  Gallery:['galerie','galería','معرض','галерея','展厅','展廳'],
+  Vault:['chambre forte','cámara acorazada','خزنة','хранилище','密库','密庫'],
+  'Service Wing':['aile de service','ala de servicio','جناح الخدمة','служебное крыло','服务区','服務區'],
+  Archive:['archives','archivo','أرشيف','архив','档案室','檔案室'],
+  Courtyard:['cour','patio','فناء','двор','庭院','庭院'],
+  'Hidden Room':['pièce cachée','sala oculta','غرفة خفية','тайная комната','密室','密室'],
+  'East Wing':['aile est','ala este','الجناح الشرقي','восточное крыло','东翼','東翼'],
+  Cellar:['cave','sótano','قبو','подвал','地窖','地窖'],
+  Atrium:['atrium','atrio','بهو','атриум','中庭','中庭'],
+  'Garden Walk':['allée du jardin','sendero del jardín','ممر الحديقة','садовая дорожка','花园小径','花園小徑'],
+  'Map Room':['salle des cartes','sala de mapas','غرفة الخرائط','картографическая','地图室','地圖室'],
+  'Bell Tower':['clocher','campanario','برج الجرس','колокольня','钟楼','鐘樓'],
+  'Old Wing':['vieille aile','ala antigua','الجناح القديم','старое крыло','旧翼','舊翼'],
+  Workshop:['atelier','taller','ورشة','мастерская','工坊','工坊'],
+  'Secret Passage':['passage secret','pasadizo secreto','ممر سري','тайный проход','密道','密道'],
+};
 export const caseLocales=Object.fromEntries(localeOrder.map((locale,index)=>[
   locale,
   Object.fromEntries(Object.entries(caseCopy[locale]).map(([id,[title,place,desc,areas]])=>{
     const puzzle=cases.find(item=>item.id===id);
-    const roles=Object.fromEntries(puzzle.people.map(([, ,role])=>[role,translatedRoles[role][index]]));
-    return [id,{title,place,desc,areas,roles}];
+    const localizedAreas=[...areas,...puzzle.areaSuffixes.map((suffix,roomIndex)=>`${areas[roomIndex%3]} — ${roomSuffixes[suffix]?.[index] ?? suffix}`)];
+    const roles=Object.fromEntries(puzzle.people.map(([, ,role])=>[role,translatedRoles[role]?.[index] ?? role]));
+    return [id,{title,place,desc,areas:localizedAreas,roles}];
   })),
 ]));
 
