@@ -762,18 +762,19 @@ html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"] { background
 html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:hover,
 html[data-theme="dark"] .scene-cell.scene-cell[style*="--room-hue"]:focus-visible { background-color: #3e72f6; box-shadow: inset 0 0 0 3px #e8efff, 0 0 0 3px #6398ff; }
 
-/* Slightly larger furniture reads better while leaving room for labels and placed people. */
-.scene-cell .scene-fixture.fixture-table { width: 82%; height: 68%; }
-.scene-cell .scene-fixture.fixture-box { width: 80%; height: 80%; }
-.scene-cell .scene-fixture.fixture-chair { width: 72%; height: 72%; }
-.scene-cell .scene-fixture.fixture-plant { width: 76%; height: 82%; }
-.scene-cell .scene-fixture.fixture-carpet { width: 88%; height: 82%; }
-.scene-cell .scene-fixture.fixture-bed, .scene-cell .scene-fixture.fixture-sofa { width: 90%; height: 78%; }
-.scene-cell .scene-fixture.fixture-shelf, .scene-cell .scene-fixture.fixture-counter { width: 82%; height: 86%; }
+/* Let furniture fill nearly the whole cell; cell clipping keeps hover scaling inside its border. */
+.scene-cell .scene-fixture svg { transform: scale(1.22); transform-origin: center; }
+.scene-cell .scene-fixture.fixture-table { width: 96%; height: 88%; }
+.scene-cell .scene-fixture.fixture-box { width: 94%; height: 92%; }
+.scene-cell .scene-fixture.fixture-chair { width: 90%; height: 90%; }
+.scene-cell .scene-fixture.fixture-plant { width: 90%; height: 94%; }
+.scene-cell .scene-fixture.fixture-carpet { width: 96%; height: 92%; }
+.scene-cell .scene-fixture.fixture-bed, .scene-cell .scene-fixture.fixture-sofa { width: 96%; height: 90%; }
+.scene-cell .scene-fixture.fixture-shelf, .scene-cell .scene-fixture.fixture-counter { width: 92%; height: 96%; }
 .scene-cell .scene-fixture.fixture-lamp,
 .scene-cell .scene-fixture.fixture-flower,
-.scene-cell .scene-fixture.fixture-bench { width: 80%; height: 82%; }
+.scene-cell .scene-fixture.fixture-bench { width: 88%; height: 92%; }
 @media (min-width: 900px) {
   .game-page[data-size="10"] .scene-cell .scene-fixture,
-  .game-page[data-size="12"] .scene-cell .scene-fixture { max-width: 84%; max-height: 84%; }
+  .game-page[data-size="12"] .scene-cell .scene-fixture { max-width: none; max-height: none; }
 }
