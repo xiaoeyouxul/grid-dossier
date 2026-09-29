@@ -30,6 +30,17 @@ test('all cases scale with difficulty and retain one valid logic solution',()=>{
     assert.ok(roomSizes.every(count=>count>0),`${puzzle.title}: every room has cells`);
     assert.ok(Math.max(...roomSizes)>Math.min(...roomSizes),`${puzzle.title}: room sizes vary`);
     assert.ok(areaMap.some((line,row)=>line.some((room,column)=>room!==Math.floor(row/2))),`${puzzle.title}: rooms include bends and alcoves`);
+    const roomSpans=Array.from({length:roomCount},(_,room)=>{
+      const cells=areaMap.flatMap((line,row)=>line.map((value,column)=>value===room?[row,column]:null)).filter(Boolean);
+      return {height:Math.max(...cells.map(([row])=>row))-Math.min(...cells.map(([row])=>row))+1,
+        width:Math.max(...cells.map(([,column])=>column))-Math.min(...cells.map(([,column])=>column))+1,
+        count:cells.length};
+    });
+    assert.ok(roomSpans.some(({height,width})=>height>=width*1.3),`${puzzle.title}: this map has a substantial vertical room`);
+    assert.ok(roomSpans.some(({height,width})=>width>=height*1.3),`${puzzle.title}: this map has a substantial horizontal room`);
+    if(puzzle.difficulty==='Expert'){
+      assert.ok(roomSpans.some(({height,width,count})=>height*width>count),`${puzzle.title}: Expert map has a concave L/U room`);
+    }
     for(let room=0;room<roomCount;room++){
       const start=areaMap.flatMap((line,row)=>line.map((area,column)=>area===room?[row,column]:null)).find(Boolean);
       const seen=new Set([start.join(',')]),queue=[start];

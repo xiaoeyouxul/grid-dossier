@@ -1,4 +1,4 @@
-import { cases } from './puzzles.js?v=20260929-3';
+import { cases } from './puzzles.js?v=20260929-4';
 
 // Per-case copy is kept separate from the interface dictionary so stories can
 // be translated without changing their stable IDs or character names.
@@ -376,6 +376,10 @@ const roomSuffixes={
   Workshop:['atelier','taller','ورشة','мастерская','工坊','工坊'],
   'Secret Passage':['passage secret','pasadizo secreto','ممر سري','тайный проход','密道','密道'],
 };
+export function translatedRoomSuffix(locale,suffix){
+  const index=localeOrder.indexOf(locale);
+  return index<0?suffix:roomSuffixes[suffix]?.[index]??suffix;
+}
 export const caseLocales=Object.fromEntries(localeOrder.map((locale,index)=>[
   locale,
   Object.fromEntries(Object.entries(caseCopy[locale]).map(([id,[title,place,desc,areas]])=>{

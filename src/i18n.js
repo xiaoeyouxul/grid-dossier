@@ -1,4 +1,4 @@
-import { caseLocales } from './case-locales.js?v=20260929-3';
+import { caseLocales, translatedRoomSuffix } from './case-locales.js?v=20260929-4';
 
 export const locales = [
   { code: 'en', label: 'English', dir: 'ltr' },
@@ -163,7 +163,12 @@ export function caseRoom(locale, puzzle, index) {
   if (!puzzle || index === undefined) return roomLabel(locale, puzzle?.areas?.[index]);
   const selected = localeInfo(locale).code;
   const translated = caseLocales[selected]?.[puzzle.id]?.areas?.[index];
-  return translated ?? roomLabel(locale, puzzle.areas?.[index]);
+  if (translated) return translated;
+  if (index >= 3 && puzzle.areaSuffixes?.[index - 3]) {
+    const base = roomLabel(locale, puzzle.areas[(index - 3) % 3]);
+    return `${base} — ${translatedRoomSuffix(selected, puzzle.areaSuffixes[index - 3])}`;
+  }
+  return roomLabel(locale, puzzle.areas?.[index]);
 }
 
 export function roleLabel(locale, value, puzzle, personIndex) {

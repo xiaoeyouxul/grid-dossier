@@ -1,6 +1,6 @@
-import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-3';
-import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-3';
-import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-3';
+import { cases, areaAt, murdererIndex } from './puzzles.js?v=20260929-4';
+import { caseRoom, caseText, clueText, difficultyLabel, formatDate, locales, localeInfo, roleLabel, supportedLocale, t } from './i18n.js?v=20260929-4';
+import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as illustratedDecoration, floorDetail } from './map-art.js?v=20260929-4';
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,

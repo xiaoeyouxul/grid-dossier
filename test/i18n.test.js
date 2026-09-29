@@ -26,7 +26,10 @@ test('the original six cases also use localized titles, descriptions, places, ro
         assert.ok(caseText(locale, puzzle, field), `${locale} ${puzzle.id} needs ${field}`);
         assert.notEqual(caseText(locale, puzzle, field), puzzle[field], `${locale} ${puzzle.id} ${field} should be localized`);
       }
-      for (let index = 0; index < puzzle.areas.length; index++) assert.ok(caseRoom(locale, puzzle, index), `${locale} ${puzzle.id} needs room ${index}`);
+      for (let index = 0; index < puzzle.areas.length; index++) {
+        assert.ok(caseRoom(locale, puzzle, index), `${locale} ${puzzle.id} needs room ${index}`);
+        if (index >= 3) assert.notEqual(caseRoom(locale, puzzle, index), puzzle.areas[index], `${locale} ${puzzle.id} room ${index} should be localized`);
+      }
       for (const person of puzzle.people) assert.ok(roleLabel(locale, person[2], puzzle), `${locale} ${puzzle.id} needs role ${person[2]}`);
     }
   }

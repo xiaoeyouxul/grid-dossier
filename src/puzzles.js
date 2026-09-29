@@ -129,35 +129,75 @@ function connected(map,room){
  return seen.size===cells.length;
 }
 function makeAreaMap(size,solution,seed){
- const rooms=size/2,map=Array.from({length:size},(_,r)=>Array(size).fill(Math.floor(r/2)));
- const occupied=new Set(solution.map(([r,c])=>`${r},${c}`));
- // Move matched cells across each room boundary at different columns. This
- // keeps every room connected while producing notches and offset alcoves.
- for(let room=0;room<rooms-1;room++){
-  const upperRow=2*room+1,lowerRow=upperRow+1,offset=(seed+room*3)%size;
-  const upper=Array.from({length:size},(_,i)=>(offset+i)%size).filter(c=>!occupied.has(`${upperRow},${c}`));
-  const lower=Array.from({length:size},(_,i)=>(offset+size-1-i)%size).filter(c=>!occupied.has(`${lowerRow},${c}`));
-  let done=false;
-  for(const a of upper)for(const b of lower){
-   if(done||a===b)continue;
-   map[upperRow][a]=room+1;map[lowerRow][b]=room;
-   if(Array.from({length:rooms},(_,id)=>connected(map,id)).every(Boolean)){done=true;break;}
-   map[upperRow][a]=room;map[lowerRow][b]=room+1;
+ const rooms=size/2,map=Array.from({length:size},()=>Array(size).fill(-1));
+ const locked=new Set(solution.map(([r,c])=>`${r},${c}`));
+ const verticalFirst=seed%2===0;
+ function divide(lo,hi,r0,r1,c0,c1,depth){
+  if(lo===hi){for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)map[r][c]=lo;return;}
+  const middle=Math.floor((lo+hi+1)/2),vertical=(depth%2===0)===verticalFirst;
+  if(vertical){const cut=2*middle;divide(lo,middle-1,r0,r1,c0,cut-1,depth+1);divide(middle,hi,r0,r1,cut,c1,depth+1);}
+  else{const cut=2*middle;divide(lo,middle-1,r0,cut-1,c0,c1,depth+1);divide(middle,hi,cut,r1,c0,c1,depth+1);}
+ }
+ divide(0,rooms-1,0,size-1,0,size-1,0);
+ // Carve a two-by-two bay from a room edge into its neighboring room. This
+ // leaves the donor connected and gives larger Hard/Expert rooms a clear U/L
+ // notch while preserving every solved cell.
+ if(size>=10){
+  const candidates=[];
+  for(let r=1;r<size-2;r++)for(let c=1;c<size-2;c++){
+   const room=map[r][c];
+   if(map[r][c+1]!==room||map[r+1][c]!==room||map[r+1][c+1]!==room)continue;
+   const sides=[
+    {cells:[[r,c],[r,c+1],[r+1,c],[r+1,c+1]],outside:[[r-1,c],[r-1,c+1]]},
+    {cells:[[r,c],[r,c+1],[r+1,c],[r+1,c+1]],outside:[[r+2,c],[r+2,c+1]]},
+    {cells:[[r,c],[r,c+1],[r+1,c],[r+1,c+1]],outside:[[r,c-1],[r+1,c-1]]},
+    {cells:[[r,c],[r,c+1],[r+1,c],[r+1,c+1]],outside:[[r,c+2],[r+1,c+2]]},
+   ];
+   for(const side of sides){
+    const donor=map[side.outside[0][0]][side.outside[0][1]];
+    if(donor===room||side.outside.some(([y,x])=>map[y][x]!==donor)||side.cells.some(([y,x])=>locked.has(`${y},${x}`)))continue;
+    candidates.push({cells:side.cells,donor});
+   }
+  }
+  if(candidates.length){
+   const start=seed%candidates.length;
+   for(let i=0;i<candidates.length;i++){
+   const {cells,donor}=candidates[(start+i)%candidates.length];
+    const previous=cells.map(([r,c])=>map[r][c]);
+    for(const [r,c] of cells)map[r][c]=donor;
+    if(Array.from({length:rooms},(_,room)=>connected(map,room)).every(Boolean))break;
+    cells.forEach(([r,c],index)=>map[r][c]=previous[index]);
+   }
   }
  }
- // Let the boundaries wander beyond their initial two-row bands. A transfer
- // is accepted only if both rooms stay connected and every solved position
- // remains in its intended room.
+ // Small connected transfers soften the straight partition lines without
+ // changing any solved position or allowing one room to engulf the board.
  let random=(seed*1664525+1013904223)>>>0;
  const next=()=>((random=(Math.imul(random,1664525)+1013904223)>>>0)/4294967296);
- for(let pass=0,changes=0;pass<size*size*5&&changes<size+rooms;pass++){
-  const row=Math.floor(next()*size),column=Math.floor(next()*size),from=map[row][column];
-  if(occupied.has(`${row},${column}`))continue;
-  const neighbors=[[row-1,column],[row+1,column],[row,column-1],[row,column+1]].filter(([r,c])=>r>=0&&r<size&&c>=0&&c<size&&map[r][c]!==from);
+ const touched=new Set(),average=size*size/rooms;
+ const geometryOkay=()=>{
+  const spans=Array.from({length:rooms},(_,room)=>{
+   const cells=map.flatMap((line,r)=>line.flatMap((value,c)=>value===room?[[r,c]]:[]));
+   const height=Math.max(...cells.map(([r])=>r))-Math.min(...cells.map(([r])=>r))+1;
+   const width=Math.max(...cells.map(([,c])=>c))-Math.min(...cells.map(([,c])=>c))+1;
+   return {height,width,count:cells.length};
+  });
+  return spans.some(({height,width})=>height>=width*1.3)
+   &&spans.some(({height,width})=>width>=height*1.3)
+   &&(size<12||spans.some(({height,width,count})=>height*width>count));
+ };
+ for(let pass=0,changes=0;pass<size*size*12&&changes<Math.ceil(size*.65);pass++){
+  const row=Math.floor(next()*size),column=Math.floor(next()*size),key=`${row},${column}`;
+  if(locked.has(key)||touched.has(key))continue;
+  const from=map[row][column];
+  const neighbors=[[row-1,column],[row+1,column],[row,column-1],[row,column+1]]
+   .filter(([r,c])=>r>=0&&r<size&&c>=0&&c<size&&map[r][c]!==from);
   if(!neighbors.length)continue;
   const [targetRow,targetColumn]=neighbors[Math.floor(next()*neighbors.length)],to=map[targetRow][targetColumn];
+  const counts=Array.from({length:rooms},(_,room)=>map.flat().filter(value=>value===room).length);
+  if(counts[from]<=average*.55||counts[to]>=average*1.8)continue;
   map[row][column]=to;
-  if(Array.from({length:rooms},(_,id)=>connected(map,id)).every(Boolean))changes++;
+  if(connected(map,from)&&geometryOkay()){touched.add(key);changes++;}
   else map[row][column]=from;
  }
  return map;

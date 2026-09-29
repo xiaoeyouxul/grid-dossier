@@ -14,7 +14,7 @@
 
 ## 功能
 
-- 不同难度采用不同尺寸的地图、人物数量与不规则房间。家具、植物及地面纹理采用本站重新绘制的矢量图形。
+- 不同难度采用不同尺寸的地图、人物数量与不规则房间。同一张地图混合横向和纵向分区，较难案件还会出现凹形、局部包绕的房间。家具、植物及地面纹理采用本站重新绘制的矢量图形。
 - 选择人物后点击地图格子放置；可标记不可能的位置、撤销、清空、获取提示并提交答案。
 - 进入案件时显示玩法说明；计时、案件进度和已完成状态保存在浏览器本地。浏览器返回与前进按钮可切换案件和档案页。
 - 支持英语、法语、西班牙语、阿拉伯语、俄语、简体中文和繁体中文。阿拉伯语界面支持从右向左排版。
@@ -54,7 +54,7 @@ Map cells and room boundaries (development capture; open the live site for the l
 
 ## Features
 
-- Difficulty-specific boards and cast sizes, irregular rooms, and original vector furniture and floor details.
+- Difficulty-specific boards and cast sizes. Each map mixes horizontal and vertical rooms; harder cases add concave or partially enclosing shapes. Furniture and floor details use original vector artwork.
 - Suspect placement, impossible-cell marks, undo, clear, hints, and answer checking.
 - A tutorial when opening a case, a timer, locally saved progress, and browser Back/Forward navigation.
 - English, French, Spanish, Arabic, Russian, Simplified Chinese, and Traditional Chinese; Arabic uses right-to-left layout.
