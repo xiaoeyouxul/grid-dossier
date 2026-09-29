@@ -4,9 +4,9 @@ import { fixtureSvg as illustratedFixture, fixtureForCell, floorDecoration as il
 
 const state = {
   page: 'cases', difficulty: 'All', sort: 'release', showAll: false,
-  caseId: null, selected: 0, grid: [], notes: [], xmarks: [], undo: [], timer: 0,
+  caseId: null, selected: 0, grid: [], xmarks: [], undo: [], timer: 0,
   theme: localStorage.theme || 'light', locale: supportedLocale(localStorage.locale || 'en'),
-  message: null, modal: null, xMode: false, hintMode: false, resultFeedback: '',
+  message: null, modal: null, xMode: false, hintMode: false,
   musicEnabled: false,
 };
 const app = document.querySelector('#app');
@@ -132,14 +132,9 @@ const fixtureSvg = type => {
 };
 
 const blank = size => Array.from({ length: size }, () => Array(size).fill(null));
-const blankNotes = size => Array.from({ length: size }, () => Array.from({ length: size }, () => []));
 const currentPuzzle = () => cases.find(item => item.id === state.caseId);
 const restoredBoard = (value, size) => Array.isArray(value) && value.length === size && value.every(row => Array.isArray(row) && row.length === size)
   ? value : blank(size);
-const restoredNotes = (value, size, peopleCount) => Array.isArray(value) && value.length === size
-  && value.every(row => Array.isArray(row) && row.length === size && row.every(cell => Array.isArray(cell)))
-  ? value.map(row => row.map(cell => [...new Set(cell.filter(person => Number.isInteger(person) && person >= 1 && person <= peopleCount))]))
-  : blankNotes(size);
 const tr = (key, values) => t(state.locale, key, values);
 const brand = () => state.locale === 'zh-TW' ? '謎格檔案' : state.locale === 'zh-CN' ? '谜格档案' : 'Grid Dossier';
 const number = value => new Intl.NumberFormat(state.locale).format(value);
@@ -154,7 +149,7 @@ const localeSelector = () => `<select class="lang" data-locale aria-label="${tr(
 const portraitIndex = (caseIndex, personIndex) => caseIndex === 0 ? [2, 1, 3, 5, 4, 6][personIndex] : ((caseIndex * 5 + personIndex) % 12) + 1;
 
 function save() {
-  saved[state.caseId] = { ...(saved[state.caseId] || {}), grid: state.grid, notes: state.notes, xmarks: state.xmarks, timer: state.timer };
+  saved[state.caseId] = { ...(saved[state.caseId] || {}), grid: state.grid, xmarks: state.xmarks, timer: state.timer };
   localStorage.murdoku = JSON.stringify(saved);
 }
 
@@ -200,10 +195,8 @@ function showCase(id, { tutorial = true, count = true } = {}) {
   state.xMode = false;
   state.hintMode = false;
   state.modal = tutorial ? 'help' : null;
-  state.resultFeedback = '';
   state.timer = saved[id]?.timer || 0;
   state.grid = restoredBoard(saved[id]?.grid, puzzle.size);
-  state.notes = restoredNotes(saved[id]?.notes, puzzle.size, puzzle.people.length);
   state.xmarks = restoredBoard(saved[id]?.xmarks, puzzle.size);
   state.undo = [];
   render();
@@ -246,7 +239,6 @@ function undo() {
   const previous = state.undo.pop();
   if (previous) {
     state.grid = previous.grid;
-    state.notes = previous.notes;
     state.xmarks = previous.xmarks;
     save();
     render();
@@ -254,63 +246,49 @@ function undo() {
 }
 
 function snapshot() {
-  state.undo.push({ grid: state.grid.map(row => [...row]), notes: state.notes.map(row => row.map(cell => [...cell])), xmarks: state.xmarks.map(row => [...row]) });
+  state.undo.push({ grid: state.grid.map(row => [...row]), xmarks: state.xmarks.map(row => [...row]) });
   if (state.undo.length > 50) state.undo.shift();
 }
 
-function setCell(row, column, confirmed = false) {
+function setCell(row, column) {
   const size = currentPuzzle().size;
   if (state.xMode) {
     snapshot();
     state.grid[row][column] = null;
-    state.notes[row][column] = [];
     state.xmarks[row][column] = !state.xmarks[row][column];
     save();
     render();
     return;
   }
   const personNumber = state.selected + 1;
-  if (!confirmed) {
-    if (state.grid[row][column]) return;
+  if (state.grid[row][column] === personNumber) {
     snapshot();
-    const candidates = state.notes[row][column];
-    state.notes[row][column] = candidates.includes(personNumber) ? candidates.filter(value => value !== personNumber) : [...candidates, personNumber];
+    state.grid[row][column] = null;
     state.message = null;
     save();
     render();
     return;
   }
-  if (state.grid[row][column] === personNumber
-    && !state.notes.some(line => line.some(candidates => candidates.includes(personNumber)))) return;
   for (let index = 0; index < size; index++) {
-    if (confirmed && ((index !== column && state.grid[row][index] > 0 && state.grid[row][index] !== personNumber)
-      || (index !== row && state.grid[index][column] > 0 && state.grid[index][column] !== personNumber))) {
+    if ((index !== column && state.grid[row][index] && state.grid[row][index] !== personNumber)
+      || (index !== row && state.grid[index][column] && state.grid[index][column] !== personNumber)) {
       setMessage('conflict');
       render();
       return;
     }
   }
   snapshot();
-  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    if (state.grid[y][x] === personNumber) state.grid[y][x] = null;
-    state.notes[y][x] = state.notes[y][x].filter(value => value !== personNumber);
-  }
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (state.grid[y][x] === personNumber) state.grid[y][x] = null;
   state.grid[row][column] = personNumber;
-  state.notes[row][column] = [];
   state.xmarks[row][column] = false;
-  // Automatic row/column crosses are derived while rendering so moves and undo stay in sync.
   state.message = null;
   save();
   render();
 }
 
 function clearBoard() {
-  if (state.grid.flat().every(value => !value)
-    && state.notes.flat().every(cell => !cell.length)
-    && state.xmarks.flat().every(marked => !marked)) return;
   snapshot();
   state.grid = blank(currentPuzzle().size);
-  state.notes = blankNotes(currentPuzzle().size);
   state.xmarks = blank(currentPuzzle().size);
   state.message = null;
   save();
@@ -329,10 +307,8 @@ function hint() {
   snapshot();
   for (let y = 0; y < puzzle.size; y++) for (let x = 0; x < puzzle.size; x++) {
     if (state.grid[y][x] === placementIndex + 1 || (y === row && state.grid[y][x]) || (x === column && state.grid[y][x])) state.grid[y][x] = null;
-    state.notes[y][x] = state.notes[y][x].filter(person => person !== placementIndex + 1);
   }
   state.grid[row][column] = placementIndex + 1;
-  state.notes[row][column] = [];
   state.xmarks[row][column] = false;
   state.selected = placementIndex;
   state.message = { type: 'clue', clue: puzzle.clues[placementIndex] };
@@ -343,11 +319,10 @@ function hint() {
 function submit() {
   const puzzle = cases.find(item => item.id === state.caseId);
   let justSolved = false;
-  if (state.grid.flat().filter(value => value > 0).length !== puzzle.people.length) {
+  if (state.grid.flat().filter(Boolean).length !== puzzle.people.length) {
     setMessage('incomplete', { count: number(puzzle.people.length) });
   } else if (puzzle.solution.every(([row, column], person) => state.grid[row][column] === person + 1)) {
     justSolved = true;
-    state.resultFeedback = 'correct';
     const culprit = murdererIndex(puzzle);
     const victim = puzzle.people.findIndex(person => person[0] === 'V');
     const victimArea = areaAt(puzzle, ...puzzle.solution[victim]);
@@ -365,15 +340,8 @@ function submit() {
     clearInterval(timerInterval);
     save();
   } else {
-    state.resultFeedback = 'incorrect';
     setMessage('incorrect');
   }
-  if (!justSolved) window.setTimeout(() => {
-    if (state.caseId !== puzzle.id) return;
-    state.resultFeedback = '';
-    document.querySelector('.scene-board')?.classList.remove('result-correct', 'result-incorrect');
-    document.querySelector('.board-result')?.remove();
-  }, 850);
   render();
   if (justSolved) {
     requestAnimationFrame(() => {
@@ -467,7 +435,6 @@ function renderGame() {
     ? clueText(state.locale, puzzle, state.message.clue)
     : state.message ? tr(state.message.key, messageValues) : '';
   const successBanner = state.message?.key === 'solvedMessage' ? `<section class="success-banner" role="status" aria-live="polite"><span class="success-mark" aria-hidden="true">✓</span><div><span class="eyebrow">${tr('caseClosed')}</span><h2>${tr('solvedHeadline')}</h2><p>${message}</p></div><div class="success-actions"><button class="primary-btn" data-action="back">${tr('backToCases')}</button>${nextPuzzle(puzzle) ? `<button class="secondary-btn" data-case="${nextPuzzle(puzzle).id}">${tr('nextCase')}</button>` : ''}</div></section>` : '';
-  const resultToast = state.resultFeedback === 'incorrect' ? `<div class="board-result" role="status" aria-live="polite">${tr('incorrect')}</div>` : '';
   app.innerHTML = `
     <header class="top game-top">
       <div class="case-identity"><button class="back-link" data-action="back">← <span>${tr('back')}</span></button><b class="game-title">${caseText(state.locale, puzzle, 'title')} <small>(${number(puzzle.size)}×${number(puzzle.size)})</small></b></div>
@@ -477,17 +444,16 @@ function renderGame() {
       ${successBanner}
       <div class="game-layout">
       <section class="map-panel" aria-label="${caseText(state.locale, puzzle, 'place')}">
-      <div class="scene-board ${state.resultFeedback ? `result-${state.resultFeedback}` : ''}" style="--board-size:${puzzle.size}">${Array.from({ length: puzzle.size ** 2 }, (_, index) => {
-        const row = Math.floor(index / puzzle.size), column = index % puzzle.size, rawValue = state.grid[row][column], value = rawValue || 0, confirmed = rawValue > 0, automaticallyMarked = !rawValue && (state.grid[row].some(Boolean) || state.grid.some(line => line[column])), marked = state.xmarks[row][column] || automaticallyMarked, area = areaAt(puzzle, row, column);
+      <div class="scene-board" style="--board-size:${puzzle.size}">${Array.from({ length: puzzle.size ** 2 }, (_, index) => {
+        const row = Math.floor(index / puzzle.size), column = index % puzzle.size, value = state.grid[row][column], marked = state.xmarks[row][column], area = areaAt(puzzle, row, column);
         const ariaLabel = `${caseRoom(state.locale, puzzle, area)}, ${tr('row')} ${number(row + 1)}, ${tr('column')} ${number(column + 1)}`;
         const material = floorMaterial(puzzle, area);
         const fixture = puzzle.id === 'c01' ? fixtureType(puzzle, row, column) : fixtureForCell(row, column, cases.indexOf(puzzle), puzzle.areas[area]);
         const decoration = fixture ? null : illustratedDecoration(row, column, cases.indexOf(puzzle), material);
-        const notes = state.notes[row][column] || [];
-        return `<button class="scene-cell area-${area} room-color-${colors[area]} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${value ? 'confirmed' : notes.length ? 'tentative' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}${value ? `, ${puzzle.people[value - 1][1]}, confirmed placement` : notes.length ? `, notes ${notes.map(n => puzzle.people[n - 1][1]).join(', ')}` : ''}" style="--room-hue:${(colors[area] * 137.508) % 360}"><span class="hold-progress" aria-hidden="true"></span><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
-          ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0].toLocaleUpperCase(state.locale)}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
-          : `${notes.length ? `<span class="cell-notes" aria-hidden="true">${notes.map(person => `<span>${puzzle.people[person - 1][0].toLocaleUpperCase(state.locale)}</span>`).join('')}</span>` : ''}${marked ? '<span class="xmark" aria-hidden="true">×</span>' : ''}`}</button>`;
-      }).join('')}${resultToast}${puzzle.areas.map((_, area) => {
+        return `<button class="scene-cell area-${area} room-color-${colors[area]} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}" style="--room-hue:${(colors[area] * 137.508) % 360}"><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
+          ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
+          : marked ? '<span class="xmark" aria-hidden="true">×</span>' : ''}</button>`;
+      }).join('')}${puzzle.areas.map((_, area) => {
         const [row, column] = roomLabelAnchor(puzzle, area);
         return `<span class="board-room-label" style="left:${(column + .08) * 100 / puzzle.size}%;top:${(row + .72) * 100 / puzzle.size}%" aria-hidden="true">${caseRoom(state.locale, puzzle, area)}</span>`;
       }).join('')}</div>
@@ -495,7 +461,7 @@ function renderGame() {
       </section>
       <section class="investigation-panel">
       <div class="suspect-heading"><span class="eyebrow">${tr('suspects')}</span><span>${tr('suspectPrompt')}</span></div>
-      <div class="suspect-list">${puzzle.people.map((person, index) => { const clue = puzzle.clues.find(item => item.person === index); const information = clueText(state.locale, puzzle, clue); const displayName = person[1].trim().split(/\s+/u)[0] || person[1]; const isPlaced = placed.includes(index + 1); return `<button class="suspect ${state.selected === index ? 'selected' : ''} ${isPlaced ? 'placed' : ''}" data-person="${index}" aria-label="${tr('selectPerson', { name:person[1] })}. ${information}"><span class="suspect-portrait-card"><span class="person-avatar"><img class="suspect-portrait" src="./assets/portraits/portrait-${portraitIndex(cases.indexOf(puzzle), index)}.webp" alt=""><span class="person-initial">${person[0]}</span></span><span class="person-copy"><b>${displayName}</b><small>${roleLabel(state.locale, person[2], puzzle, index)}</small></span><span class="person-check">${isPlaced ? '✓' : ''}</span></span><span class="suspect-clue">${information}</span></button>`; }).join('')}</div>
+      <div class="suspect-list">${puzzle.people.map((person, index) => { const clue = puzzle.clues.find(item => item.person === index); const information = clueText(state.locale, puzzle, clue); const displayName = person[1].trim().split(/\s+/u)[0] || person[1]; return `<button class="suspect ${state.selected === index ? 'selected' : ''} ${placed.includes(index + 1) ? 'placed' : ''}" data-person="${index}" aria-label="${tr('selectPerson', { name:person[1] })}. ${information}"><span class="suspect-portrait-card"><span class="person-avatar"><img class="suspect-portrait" src="./assets/portraits/portrait-${portraitIndex(cases.indexOf(puzzle), index)}.webp" alt=""><span class="person-initial">${person[0]}</span></span><span class="person-copy"><b>${displayName}</b><small>${roleLabel(state.locale, person[2], puzzle, index)}</small></span><span class="person-check">${placed.includes(index + 1) ? '✓' : ''}</span></span><span class="suspect-clue">${information}</span></button>`; }).join('')}</div>
       ${message && state.message?.key !== 'solvedMessage' ? `<div class="notice">${message}</div>` : ''}
       </section>
       </div>
@@ -573,51 +539,7 @@ function bind() {
       };
       element.onfocus = () => { focusedCell = element.matches(':focus-visible') ? element : null; updateRoomHighlight(); };
       element.onblur = () => { if (focusedCell === element) focusedCell = null; updateRoomHighlight(); };
-      let holdTimer = 0, longPressed = false, pointerActive = false;
-      const coords = () => element.dataset.cell.split(',').map(Number);
-      const cancelHold = () => { clearTimeout(holdTimer); holdTimer = 0; element.classList.remove('holding'); };
-      element.oncontextmenu = event => event.preventDefault();
-      element.onpointerdown = event => {
-        if (event.button !== undefined && event.button !== 0) return;
-        pointerActive = true; longPressed = false;
-        if (!state.xMode) {
-          element.classList.add('holding');
-          holdTimer = window.setTimeout(() => {
-            if (!pointerActive) return;
-            longPressed = true;
-            const [row, column] = coords(); setCell(row, column, true);
-          }, 640);
-        }
-      };
-      element.onpointerup = () => {
-        if (!pointerActive) return;
-        pointerActive = false;
-        const wasLong = longPressed;
-        cancelHold();
-        if (!wasLong) { const [row, column] = coords(); setCell(row, column, false); }
-      };
-      element.onpointercancel = element.onpointerleave = () => { pointerActive = false; cancelHold(); };
-      element.onkeydown = event => {
-        if (![' ', 'Enter'].includes(event.key) || event.repeat || state.xMode) return;
-        event.preventDefault();
-        longPressed = false;
-        element.classList.add('holding');
-        holdTimer = window.setTimeout(() => {
-          longPressed = true;
-          const [row, column] = coords(); setCell(row, column, true);
-        }, 640);
-      };
-      element.onkeyup = event => {
-        if (![' ', 'Enter'].includes(event.key) || state.xMode) return;
-        event.preventDefault();
-        const wasLong = longPressed;
-        cancelHold();
-        if (!wasLong) { const [row, column] = coords(); setCell(row, column, false); }
-      };
-      element.onclick = event => {
-        if (event.detail !== 0) { event.preventDefault(); return; }
-        const [row, column] = coords(); setCell(row, column, false);
-      };
+      element.onclick = () => { const [row, column] = element.dataset.cell.split(',').map(Number); setCell(row, column); };
     });
   }
   const sort = document.querySelector('[data-sort]');

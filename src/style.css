@@ -814,20 +814,6 @@ html[data-theme="dark"] .scene-cell.scene-cell.xmarked[style*="--room-hue"]:focu
 .scene-cell.room-boundary-hover.room-wall-s { border-bottom-color: #3978ff !important; }
 .scene-cell.room-boundary-hover.room-wall-w { border-left-color: #3978ff !important; }
 
-/* A tap leaves a pencil note; holding fills the circular confirmation ring. */
-.scene-cell { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-.scene-cell .cell-notes { position: absolute; z-index: 3; top: 3px; left: 4px; display: flex; max-width: 72%; flex-wrap: wrap; gap: 1px 4px; color: #171522; font: 800 clamp(8px, 1vw, 11px) "DM Mono", Consolas, monospace; line-height: 1; text-shadow: 0 1px 2px #fff; pointer-events: none; }
-.scene-cell.confirmed .cell-person { width: 48px; height: 48px; font-size: 20px; }
-.hold-progress { position: absolute; z-index: 4; width: 62%; aspect-ratio: 1; border: 3px solid transparent; border-top-color: #fff; border-right-color: #fff; border-radius: 50%; opacity: 0; pointer-events: none; filter: drop-shadow(0 1px 2px #171522); }
-.scene-cell.holding .hold-progress { opacity: 1; animation: hold-spin .64s linear forwards; }
-@keyframes hold-spin { to { transform: rotate(360deg); } }
-.scene-board.result-incorrect { animation: board-wrong .42s ease-in-out 2; }
-.scene-board.result-correct { animation: board-right .72s ease-out 1; }
-.board-result { position: absolute; z-index: 8; right: 8%; bottom: 12px; left: 8%; padding: 10px 14px; border: 2px solid #fff; border-radius: 999px; color: #fff; background: #c94351ed; box-shadow: 0 3px 12px #17152255; font-size: clamp(12px, 1.4vw, 16px); font-weight: 800; text-align: center; pointer-events: none; }
-@keyframes board-wrong { 25% { transform: translateX(-5px); box-shadow: 0 0 0 4px #d94a58, 0 10px 0 #373446; } 75% { transform: translateX(5px); box-shadow: 0 0 0 4px #d94a58, 0 10px 0 #373446; } }
-@keyframes board-right { 50% { box-shadow: 0 0 0 7px #36a776, 0 0 28px #36a77688, 0 10px 0 #373446; } }
-@media (prefers-reduced-motion: reduce) { .scene-cell.holding .hold-progress, .scene-board.result-incorrect, .scene-board.result-correct { animation-duration: .01ms; } }
-
 /* Let furniture fill nearly the whole cell; cell clipping keeps hover scaling inside its border. */
 .scene-cell .scene-fixture svg { transform: scale(1.46); transform-origin: center; }
 .scene-cell .scene-fixture.fixture-table { width: 96%; height: 88%; }
