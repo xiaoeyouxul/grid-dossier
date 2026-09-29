@@ -478,7 +478,7 @@ function renderGame() {
         const decoration = fixture ? null : illustratedDecoration(row, column, cases.indexOf(puzzle), material);
         return `<button class="scene-cell area-${area} room-color-${colors[area]} floor-${material} ${roomWalls(puzzle, row, column, area)} ${value ? 'filled' : ''} ${marked ? 'xmarked' : ''}" data-cell="${row},${column}" aria-label="${ariaLabel}" style="--room-hue:${(colors[area] * 137.508) % 360}"><span class="scene-floor-detail" aria-hidden="true">${floorDetail(material, row + column)}</span>${fixture ? `<span class="scene-fixture fixture-${fixture}" aria-hidden="true">${illustratedFixture(fixture)}</span>` : ''}${decoration ? `<span class="scene-decor decor-${decoration}" aria-hidden="true"></span>` : ''}${value
           ? `<span class="person-avatar cell-person">${puzzle.people[value - 1][0]}</span><small>${puzzle.people[value - 1][1].split(' ')[0]}</small>`
-          : marked ? '<span class="xmark" aria-hidden="true">×</span>' : `<span class="cell-coordinate">${number(row + 1)}·${number(column + 1)}</span>`}</button>`;
+          : marked ? '<span class="xmark" aria-hidden="true">×</span>' : ''}</button>`;
       }).join('')}${puzzle.areas.map((_, area) => {
         const [row, column] = roomLabelAnchor(puzzle, area);
         return `<span class="board-room-label" style="left:${(column + .08) * 100 / puzzle.size}%;top:${(row + .72) * 100 / puzzle.size}%" aria-hidden="true">${caseRoom(state.locale, puzzle, area)}</span>`;
